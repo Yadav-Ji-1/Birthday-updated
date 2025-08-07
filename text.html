@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lajawaab Glitch Effect</title>
+  <title>jp beta ye le Glitch Effect</title>
   <style>
     body {
       background-color: #0d0d0d;
@@ -192,26 +192,24 @@
         this.bound = buffer.measureText(this.copy);
         this.bound.height = this.size * 1.2;
         this.x = options.x || w * 0.5 - this.bound.width * 0.5;
-        this.y = options.y || h * 0.5 - this.size * 0.5;
-
+        this.y = options.y || h * 0.5 - this.bound.height * 0.5; // Corrected Y position
+        
         buffer.strokeStyle = this.color;
         buffer.lineWidth = 2;
         buffer.strokeText(this.copy, 0, this.bound.height * 0.8);
         this.data = buffer.getImageData(0, 0, this.bound.width, this.bound.height);
         this.index = 0;
-        this.isComplete = false; // Added a new property to track completion
+        this.isComplete = false;
       }
 
       update() {
-        // If the animation is already complete, do nothing.
         if (this.isComplete) {
             return;
         }
 
         if (this.index >= this.bound.width) {
-          // Animation is complete! Set the flag and redirect.
           this.isComplete = true;
-          window.location.href = "main.html"; // This is the new line.
+          // window.location.href = "main.html"; // Commented out redirect for testing
           return;
         }
 
@@ -257,12 +255,10 @@
       ctx.fillStyle = '#0d0d0d';
       ctx.fillRect(0, 0, w, h);
 
-      // Render background elements first
       ctx.globalAlpha = 1;
       backgroundLines.forEach(l => l.render(ctx));
       backgroundSquares.forEach(s => s.render(ctx));
 
-      // Main glitch effect on top
       ctx.globalCompositeOperation = 'lighter';
       text.render(ctx);
       glitchBlocks.forEach(g => g.render(ctx));
@@ -277,6 +273,7 @@
       canvas.width = w;
       canvas.height = h;
 
+      // Initialize background elements
       for (let i = 0; i < 50; i++) {
         backgroundLines.push(new BackgroundLine());
       }
@@ -289,8 +286,13 @@
       glitchBlocks = [];
       particles = [];
 
+      // Dynamically adjust font size based on screen width
+      const baseSize = 120;
+      const size = w < 600 ? baseSize * (w / 600) : baseSize;
+      
       text = new Text({
-        copy: 'JP YADAV JI'
+        copy: 'JP YADAV JI',
+        size: size
       });
 
       canvas.addEventListener('click', e => {
@@ -306,6 +308,9 @@
     }
     
     init();
+
+    // Re-initialize on window resize
+    window.addEventListener('resize', init);
   </script>
 </body>
 </html>
