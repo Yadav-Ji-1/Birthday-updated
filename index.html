@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teleporting...</title>
+    <title>Teleporting...to hell</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
@@ -132,11 +132,7 @@
             width: 100%;
             height: 100vh;
         }
-        .page-thunder-to-text canvas {
-            display: block;
-        }
-        
-        /* Style for the text container */
+
         .text-container {
             display: flex;
             flex-direction: column;
@@ -147,13 +143,20 @@
             position: absolute;
             top: 0;
             left: 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            overflow: hidden;
         }
 
-        /* Hide the canvas to prevent it from affecting layout */
-        #canvas {
-            display: none; 
+        /* Adjust font size for smaller screens */
+        @media (max-width: 600px) {
+            .text-container h1 {
+                font-size: 24px;
+            }
+            .text-container h2 {
+                font-size: 18px;
+            }
         }
-
     </style>
 </head>
 <body>
@@ -305,6 +308,7 @@
                 const pool = document.createElement('canvas');
                 const buffer = pool.getContext('2d');
                 pool.width = w;
+                pool.height = h;
                 buffer.fillStyle = '#000000';
                 buffer.fillRect(0, 0, pool.width, pool.height);
                 this.size = options.size || 80;
@@ -320,8 +324,6 @@
                 this.data = buffer.getImageData(0, 0, this.bound.width, this.bound.height);
                 this.index = 0;
                 this.update = function () {
-                    // Draws multiple characters per frame for faster animation
-                    // You can change the number '2' to draw more or fewer characters at once
                     for (let i = 0; i < 5; i++) {
                         if (this.index >= this.bound.width) {
                             return true;
@@ -362,10 +364,9 @@
                 } else {
                     if (!animationComplete) {
                         animationComplete = true;
-                        // Redirect after a short delay
                         completionTimeout = setTimeout(() => {
-                            window.location.href = 'login.html';
-                        }, 500); // Redirect after 0.5 seconds
+                            window.location.href = 'base.html';
+                        }, 500); 
                     }
                 }
 
@@ -388,7 +389,7 @@
 
             (function () {
                 canvas = document.getElementById('canvas');
-                canvas.style.display = 'block'; // Make canvas visible
+                canvas.style.display = 'block'; 
                 ctx = canvas.getContext('2d');
                 w = window.innerWidth;
                 h = window.innerHeight;
@@ -398,11 +399,13 @@
                 thunder = [];
                 particles = [];
                 
-                // Define the two lines of text
+                // Dynamically adjust font size based on screen width
+                const baseSize = 80;
+                const size = w < 600 ? baseSize * 0.6 : baseSize;
+                const lineHeight = size * 1.2;
+
                 const text1 = 'INITIATING';
                 const text2 = 'VERIFICATION';
-                const size = 80;
-                const lineHeight = size * 1.2;
 
                 // Create a temporary canvas to measure the text widths
                 const tempCanvas = document.createElement('canvas');
@@ -414,18 +417,17 @@
                 const totalHeight = lineHeight * 2;
                 const startY = (h - totalHeight) / 2;
 
-                // Create Text objects for each line
                 const textLine1 = new Text({ 
                     copy: text1, 
                     size: size, 
                     y: startY, 
-                    x: (w - text1Width) / 2 // Center the text
+                    x: (w - text1Width) / 2 
                 });
                 const textLine2 = new Text({ 
                     copy: text2, 
                     size: size, 
                     y: startY + lineHeight,
-                    x: (w - text2Width) / 2 // Center the text
+                    x: (w - text2Width) / 2
                 });
                 
                 textLines = [textLine1, textLine2];
