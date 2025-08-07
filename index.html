@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teleporting...</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffcc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .grid-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 204, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes grid-move {
+            from { background-position: 0 0; }
+            to { background-position: 50px 50px; }
+        }
+
+        .portal-container {
+            position: relative;
+            width: 60vh;
+            height: 60vh;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spiral-wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 80px #00aaff, inset 0 0 40px #00aaff;
+            animation: portal-spin 20s linear infinite, glow-pulse 3s ease-in-out infinite alternate;
+            background: radial-gradient(circle, rgba(0, 255, 204, 0.5) 0%, rgba(0, 255, 204, 0) 70%);
+        }
+
+        .spiral-wave::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 5px solid rgba(0, 255, 204, 0.8);
+            border-radius: 50%;
+            animation: wave-expand 3s ease-out infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.8);
+        }
+
+        @keyframes portal-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes glow-pulse {
+            from { box-shadow: 0 0 80px #00aaff; }
+            to { box-shadow: 0 0 100px #00aaff; }
+        }
+
+        @keyframes wave-expand {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .portal-content {
+            z-index: 3;
+            text-align: center;
+            position: relative;
+            top: 20vh;
+        }
+        
+        .teleport-btn {
+            background: linear-gradient(45deg, #00ffcc, #00aaff);
+            border: none;
+            color: black;
+            padding: 15px 32px;
+            font-size: 1.2em;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px #00ffcc;
+        }
+
+        .teleport-btn:hover {
+            background: linear-gradient(45deg, #00aaff, #00ffcc);
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00aaff;
+        }
+
+        /* Verification Overlay */
+        .verification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        /* New Styles for the animation from the second code */
+        .page-thunder-to-text {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        .page-thunder-to-text canvas {
+            display: block;
+        }
+        
+        /* Style for the text container */
+        .text-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Hide the canvas to prevent it from affecting layout */
+        #canvas {
+            display: none; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <div class="portal-container" id="portalContainer">
+        <div class="spiral-wave"></div>
+    </div>
+    
+    <div class="portal-content" id="portalContent">
+        <button class="teleport-btn" onclick="activateTeleportation()">TELEPORT TO EKANT'S SECRET BASE</button>
+    </div>
+
+    <div class="verification-overlay" id="verificationOverlay">
+        <div class="page page-thunder-to-text">
+            <div class="text-container">
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function activateTeleportation() {
+            // Hide the original portal content
+            document.getElementById('portalContainer').style.display = 'none';
+            document.getElementById('portalContent').style.display = 'none';
+            
+            // Show the new verification overlay
+            const overlay = document.getElementById('verificationOverlay');
+            overlay.style.display = 'flex';
+
+            // Start the new animation
+            startVerificationAnimation();
+        }
+
+        function startVerificationAnimation() {
+            let canvas, ctx, w, h, thunder, textLines, particles;
+
+            function Thunder(options) {
+                options = options || {};
+                this.lifespan = options.lifespan || Math.round(Math.random() * 10 + 10);
+                this.maxlife = this.lifespan;
+                this.color = options.color || '#fefefe';
+                this.glow = options.glow || '#2323fe';
+                this.x = options.x || Math.random() * w;
+                this.y = options.y || Math.random() * h;
+                this.width = options.width || 2;
+                this.direct = options.direct || Math.random() * Math.PI * 2;
+                this.max = options.max || Math.round(Math.random() * 10 + 20);
+                this.segments = [...new Array(this.max)].map(() => {
+                    return {
+                        direct: this.direct + (Math.PI * Math.random() * 0.2 - 0.1),
+                        length: Math.random() * 20 + 80,
+                        change: Math.random() * 0.04 - 0.02
+                    };
+                });
+                this.update = function (index, array) {
+                    this.segments.forEach(s => {(s.direct += s.change) && Math.random() > 0.96 && (s.change *= -1);});
+                    this.lifespan > 0 && this.lifespan-- || this.remove(index, array);
+                };
+                this.render = function (ctx) {
+                    if (this.lifespan <= 0) return;
+                    ctx.beginPath();
+                    ctx.globalAlpha = this.lifespan / this.maxlife;
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = this.width;
+                    ctx.shadowBlur = 32;
+                    ctx.shadowColor = this.glow;
+                    ctx.moveTo(this.x, this.y);
+                    let prev = { x: this.x, y: this.y };
+                    this.segments.forEach(s => {
+                        const x = prev.x + Math.cos(s.direct) * s.length;
+                        const y = prev.y + Math.sin(s.direct) * s.length;
+                        prev = { x: x, y: y };
+                        ctx.lineTo(x, y);
+                    });
+                    ctx.stroke();
+                    ctx.closePath();
+                    ctx.shadowBlur = 0;
+                    const strength = Math.random() * 80 + 40;
+                    const light = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, strength);
+                    light.addColorStop(0, 'rgba(250, 200, 50, 0.6)');
+                    light.addColorStop(0.1, 'rgba(250, 200, 50, 0.2)');
+                    light.addColorStop(0.4, 'rgba(250, 200, 50, 0.06)');
+                    light.addColorStop(0.65, 'rgba(250, 200, 50, 0.01)');
+                    light.addColorStop(0.8, 'rgba(250, 200, 50, 0)');
+                    ctx.beginPath();
+                    ctx.fillStyle = light;
+                    ctx.arc(this.x, this.y, strength, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.closePath();
+                };
+                this.remove = function (index, array) { array.splice(index, 1); };
+            }
+
+            function Spark(options) {
+                options = options || {};
+                this.x = options.x || w * 0.5;
+                this.y = options.y || h * 0.5;
+                this.v = options.v || { direct: Math.random() * Math.PI * 2, weight: Math.random() * 14 + 2, friction: 0.88 };
+                this.a = options.a || { change: Math.random() * 0.4 - 0.2, min: this.v.direct - Math.PI * 0.4, max: this.v.direct + Math.PI * 0.4 };
+                this.g = options.g || { direct: Math.PI * 0.5 + (Math.random() * 0.4 - 0.2), weight: Math.random() * 0.25 + 0.25 };
+                this.width = options.width || Math.random() * 3;
+                this.lifespan = options.lifespan || Math.round(Math.random() * 20 + 40);
+                this.maxlife = this.lifespan;
+                this.color = options.color || '#feca32';
+                this.prev = { x: this.x, y: this.y };
+                this.update = function (index, array) {
+                    this.prev = { x: this.x, y: this.y };
+                    this.x += Math.cos(this.v.direct) * this.v.weight;
+                    this.x += Math.cos(this.g.direct) * this.g.weight;
+                    this.y += Math.sin(this.v.direct) * this.v.weight;
+                    this.y += Math.sin(this.g.direct) * this.g.weight;
+                    this.v.weight > 0.2 && (this.v.weight *= this.v.friction);
+                    this.v.direct += this.a.change;
+                    (this.v.direct > this.a.max || this.v.direct < this.a.min) && (this.a.change *= -1);
+                    this.lifespan > 0 && this.lifespan--;
+                    this.lifespan <= 0 && this.remove(index, array);
+                };
+                this.render = function (ctx) {
+                    if (this.lifespan <= 0) return;
+                    ctx.beginPath();
+                    ctx.globalAlpha = this.lifespan / this.maxlife;
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = this.width;
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.prev.x, this.prev.y);
+                    ctx.stroke();
+                    ctx.closePath();
+                };
+                this.remove = function (index, array) { array.splice(index, 1); };
+            }
+
+            function Particles(options) {
+                options = options || {};
+                this.max = options.max || Math.round(Math.random() * 10 + 10);
+                this.sparks = [...new Array(this.max)].map(() => new Spark(options));
+                this.update = function () { this.sparks.forEach((s, i) => s.update(i, this.sparks)); };
+                this.render = function (ctx) { this.sparks.forEach(s => s.render(ctx)); };
+            }
+
+            let animationComplete = false;
+            let completionTimeout;
+            let currentLineIndex = 0;
+
+            function Text(options) {
+                options = options || {};
+                const pool = document.createElement('canvas');
+                const buffer = pool.getContext('2d');
+                pool.width = w;
+                buffer.fillStyle = '#000000';
+                buffer.fillRect(0, 0, pool.width, pool.height);
+                this.size = options.size || 80;
+                this.copy = options.copy || `INITIATING`;
+                this.color = options.color || '#cd96fe';
+                buffer.font = `bold ${this.size}px Orbitron`;
+                this.bound = buffer.measureText(this.copy);
+                this.bound.height = this.size * 1.5;
+                this.x = options.x || w * 0.5 - this.bound.width * 0.5;
+                this.y = options.y || h * 0.5 - this.size * 0.5;
+                buffer.strokeStyle = this.color;
+                buffer.strokeText(this.copy, 0, this.bound.height * 0.8);
+                this.data = buffer.getImageData(0, 0, this.bound.width, this.bound.height);
+                this.index = 0;
+                this.update = function () {
+                    // Draws multiple characters per frame for faster animation
+                    // You can change the number '2' to draw more or fewer characters at once
+                    for (let i = 0; i < 5; i++) {
+                        if (this.index >= this.bound.width) {
+                            return true;
+                        }
+                        const data = this.data.data;
+                        for (let i = this.index * 4; i < data.length; i += 4 * this.data.width) {
+                            const bitmap = data[i] + data[i + 1] + data[i + 2] + data[i + 3];
+                            if (bitmap > 255 && Math.random() > 0.96) {
+                                const x = this.x + this.index;
+                                const y = this.y + i / this.bound.width / 4;
+                                thunder.push(new Thunder({ x: x, y: y }));
+                                Math.random() > 0.7 && particles.push(new Particles({ x: x, y: y }));
+                            }
+                        }
+                        this.index++;
+                    }
+                    return false;
+                };
+                this.render = function (ctx) {
+                    ctx.putImageData(this.data, this.x, this.y, 0, 0, this.index, this.bound.height);
+                };
+            }
+
+            function loop() {
+                update();
+                render();
+                if (!animationComplete) {
+                    requestAnimationFrame(loop);
+                }
+            }
+
+            function update() {
+                if (currentLineIndex < textLines.length) {
+                    const lineComplete = textLines[currentLineIndex].update();
+                    if (lineComplete) {
+                        currentLineIndex++;
+                    }
+                } else {
+                    if (!animationComplete) {
+                        animationComplete = true;
+                        // Redirect after a short delay
+                        completionTimeout = setTimeout(() => {
+                            window.location.href = 'base.html';
+                        }, 500); // Redirect after 0.5 seconds
+                    }
+                }
+
+                thunder.forEach((l, i) => l.update(i, thunder));
+                particles.forEach(p => p.update());
+            }
+
+            function render() {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, w, h);
+                ctx.globalCompositeOperation = 'screen';
+                
+                textLines.forEach(line => line.render(ctx));
+                
+                thunder.forEach(l => l.render(ctx));
+                particles.forEach(p => p.render(ctx));
+            }
+
+            (function () {
+                canvas = document.getElementById('canvas');
+                canvas.style.display = 'block'; // Make canvas visible
+                ctx = canvas.getContext('2d');
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w;
+                canvas.height = h;
+
+                thunder = [];
+                particles = [];
+                
+                // Define the two lines of text
+                const text1 = 'INITIATING';
+                const text2 = 'VERIFICATION';
+                const size = 80;
+                const lineHeight = size * 1.2;
+
+                // Create a temporary canvas to measure the text widths
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.font = `bold ${size}px Orbitron`;
+                const text1Width = tempCtx.measureText(text1).width;
+                const text2Width = tempCtx.measureText(text2).width;
+
+                const totalHeight = lineHeight * 2;
+                const startY = (h - totalHeight) / 2;
+
+                // Create Text objects for each line
+                const textLine1 = new Text({ 
+                    copy: text1, 
+                    size: size, 
+                    y: startY, 
+                    x: (w - text1Width) / 2 // Center the text
+                });
+                const textLine2 = new Text({ 
+                    copy: text2, 
+                    size: size, 
+                    y: startY + lineHeight,
+                    x: (w - text2Width) / 2 // Center the text
+                });
+                
+                textLines = [textLine1, textLine2];
+
+                loop();
+            })();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎉 You are great my dearest friend 🎉</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Nunito', sans-serif;
+    }
+    body {
+      background: black;
+      position: relative;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+    .magic-container {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      color: white;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .message {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .cyber-button {
+      background: linear-gradient(to right, #ff4f5e, #00ffff);
+      color: white;
+      font-weight: 600;
+      padding: 0.8rem 1.6rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px #00ffff;
+      transition: transform 0.3s ease;
+      margin-top: 1rem;
+    }
+    .cyber-button:hover {
+      transform: scale(1.05);
+    }
+    #partyCanvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Audio -->
+  <audio id="bdayAudio" src="birthday1.mp3" autoplay muted></audio>
+
+  <canvas id="rippleCanvas"></canvas> 
+  <canvas id="partyCanvas"></canvas>
+
+  <div class="magic-container" id="messageContainer">
+    <p class="message" id="initialMessage">
+      🌟 J.P. a surprise is waiting for you! 😊🎁 ✨
+    </p>
+    <p class="message hidden" id="secondMessage"></p>
+    <div id="buttonWrapper" style="display: none;">
+      <button class="cyber-button" id="enterButton">
+        🚀 Click here to see your surprise! friend 🎁🎇
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 🌀 Smooth Ripple Animation
+    const rippleCanvas = document.getElementById('rippleCanvas');
+    const ctx = rippleCanvas.getContext('2d');
+    let width, height;
+    let frame = 0;
+    let lastTime = 0;
+
+    function resize() {
+      width = rippleCanvas.width = window.innerWidth;
+      height = rippleCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function drawRippleFrame(delta) {
+      ctx.clearRect(0, 0, width, height);
+      const cx = width / 2;
+      const cy = height / 2;
+      const maxRadius = Math.min(width, height) * 0.75;
+      const ringCount = 6;
+
+      for (let i = 0; i < ringCount; i++) {
+        const radius = ((frame + i * 20) % maxRadius);
+        const alpha = 1 - radius / maxRadius;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `hsla(${(frame + i * 30) % 360}, 100%, 60%, ${alpha})`;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+      frame += delta * 0.12;
+    }
+
+    function rippleLoop(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const delta = timestamp - lastTime;
+      lastTime = timestamp;
+
+      drawRippleFrame(delta);
+      requestAnimationFrame(rippleLoop);
+    }
+
+    // 🧨 Party Animation
+    const partyCanvas = document.getElementById('partyCanvas');
+    const pctx = partyCanvas.getContext('2d');
+    let particles = [];
+
+    function initParty() {
+      partyCanvas.style.display = 'block';
+      partyCanvas.width = window.innerWidth;
+      partyCanvas.height = window.innerHeight;
+      particles = [];
+      for (let i = 0; i < 80; i++) {
+        particles.push({
+          x: Math.random() * partyCanvas.width,
+          y: Math.random() * partyCanvas.height,
+          r: Math.random() * 6 + 4,
+          color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+          dx: (Math.random() - 0.5) * 2,
+          dy: (Math.random() - 0.5) * 2,
+        });
+      }
+      animateParty();
+    }
+
+    function animateParty() {
+      pctx.clearRect(0, 0, partyCanvas.width, partyCanvas.height);
+      particles.forEach(p => {
+        pctx.beginPath();
+        pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        pctx.fillStyle = p.color;
+        pctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > partyCanvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > partyCanvas.height) p.dy *= -1;
+      });
+      requestAnimationFrame(animateParty);
+    }
+
+    // 🎁 Surprise Flow
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('messageContainer');
+      const initialMessage = document.getElementById('initialMessage');
+      const secondMessage = document.getElementById('secondMessage');
+      const enterButton = document.getElementById('enterButton');
+      const audio = document.getElementById('bdayAudio');
+
+      // ✅ Start audio immediately or on first user click
+      audio.muted = false;
+
+      const tryPlay = () => {
+        audio.play().then(() => {
+          document.removeEventListener('click', tryPlay);
+        }).catch(err => {
+          console.warn('Autoplay blocked, waiting for user click...');
+        });
+      };
+      tryPlay();
+      document.addEventListener('click', tryPlay);
+
+      initialMessage.addEventListener('click', () => {
+        gsap.to(initialMessage, {
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => {
+            initialMessage.classList.add('hidden');
+            secondMessage.classList.remove('hidden');
+            audio.play();
+
+            const msg = "🎉 Happy Birthday J.P. 🎉🥳 💖";
+            let i = 0;
+            secondMessage.textContent = "";
+            const typing = setInterval(() => {
+              if (i < msg.length) {
+                secondMessage.textContent += msg.charAt(i);
+                i++;
+              } else {
+                clearInterval(typing);
+                document.getElementById('buttonWrapper').style.display = 'block';
+              }
+            }, 60);
+
+            rippleCanvas.style.display = 'none';
+            initParty();
+          }
+        });
+      });
+
+      enterButton.addEventListener('click', () => {
+        audio.pause();
+        audio.currentTime = 0;
+        confetti({ particleCount: 200, spread: 120, origin: { y: 0.6 } });
+        setTimeout(() => {
+          window.location.href = "door.html";
+        }, 2000);
+      });
+    });
+
+    // ✅ Start ripple only after window loads for smoother experience
+    window.addEventListener('load', () => {
+      drawRippleFrame(0); // warm-up frame
+      requestAnimationFrame((t) => rippleLoop(t));
+    });
+  </script>
+</body>
+</html>

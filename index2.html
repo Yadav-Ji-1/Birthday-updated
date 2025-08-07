@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dearest Friend identifier-JP</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+    body {
+      background: radial-gradient(circle at top, #111 0%, #000 100%);
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+    @keyframes blink {
+      0%, 100% { border-color: transparent }
+      50% { border-color: #00ffe0 }
+    }
+    #login-form h2 {
+      margin-bottom: 20px;
+      font-size: 20px;
+      color: #00ffe0;
+      text-shadow: 0 0 8px #00ffe0;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid;
+      width: 0;
+      animation: typing 2s steps(20) 1s forwards, blink 0.8s step-end infinite;
+    }
+    #login-form {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 380px;
+      padding: 35px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 0 20px #00ffe0, 0 0 60px #00ffe0;
+      animation: pulse 3s infinite alternate;
+      z-index: 10;
+    }
+    #login-form input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+    #login-form button {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #00ffc3, #ff00e0);
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffc3, 0 0 20px #ff00e0;
+      transition: transform 0.3s ease;
+    }
+    #login-form button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px #00ffc3, 0 0 40px #ff00e0;
+    }
+    .particle {
+      position: fixed;
+      top: -20px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff00e0, #00ffe0);
+      animation: fall 6s linear forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .particle::after {
+      content: "★";
+      font-size: 12px;
+      color: #fff;
+      position: absolute;
+      top: -2px;
+      left: -2px;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      color: lime;
+      font-family: monospace;
+      font-size: 2rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+    .countdown {
+      font-size: 4rem;
+      animation: flicker 0.5s steps(2, end) infinite;
+    }
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    #matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      z-index: 999;
+      display: none;
+      overflow: hidden;
+    }
+    canvas { display: block; }
+    #final-message {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      text-align: center;
+      font-size: 32px;
+      color: red;
+      text-shadow: 0 0 10px red;
+      z-index: 1001;
+      display: none;
+      word-wrap: break-word;
+    }
+    #retry-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: transparent;
+      color: white;
+      border: 2px solid #0f0;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+      position: relative;
+      z-index: 10002;
+    }
+    .you-did-it {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      padding: 20px 40px;
+      color: #00f0ff;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #00f0ff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00f0ff, 0 0 40px #00f0ff;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid #00f0ff;
+      width: 0;
+      animation:
+        typing2 2.5s steps(30, end) forwards,
+        blink-caret 0.75s step-end infinite,
+        glowflicker 2s infinite;
+      z-index: 10000;
+      display: none;
+    }
+    @keyframes typing2 {
+      from { width: 0 }
+      to { width: 320px }
+    }
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: #00f0ff; }
+    }
+    @keyframes glowflicker {
+      0%, 100% { text-shadow: 0 0 5px #00f0ff, 0 0 20px #00f0ff; }
+      50% { text-shadow: 0 0 2px #00f0ff, 0 0 5px #00f0ff; }
+    }
+    #starfield {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+    }
+    #analyzing-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      color: #0f0;
+      font-family: monospace;
+      font-size: 2rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      position: relative;
+    }
+    #analyzing-screen canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+    #overlay-container {
+        position: relative;
+        z-index: 10000;
+    }
+    #analyzing-text {
+        position: relative;
+        z-index: 10001;
+    }
+    #overlay {
+        background-color: #0a0a0a;
+        background-image:
+            linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+        background-size: 10px 10px;
+        animation: fade-in-out 5s infinite;
+    }
+    @keyframes fade-in-out {
+        0% { opacity: 1; }
+        50% { opacity: 0.8; }
+        100% { opacity: 1; }
+    }
+    #analyzing-screen {
+        background-color: #0a0a0a;
+        background-image:
+            radial-gradient(circle, #0f0 1px, transparent 1px),
+            radial-gradient(circle, #0f0 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        animation: pulsing-dots 2s infinite;
+    }
+    @keyframes pulsing-dots {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <audio id="success-sound" src="birthday.mp3" preload="auto"></audio>
+  <audio id="error-sound" src="error.mp3" preload="auto"></audio>
+
+  <form id="login-form">
+    <h2>Who is your dearest friend?</h2>
+    <input type="text" id="love-name" placeholder="Dearest friend" />
+    <button id="submit-btn">Verify answer</button>
+  </form>
+
+  <div id="overlay">
+    <div id="overlay-container">
+      <div class="countdown" id="countdown">3</div>
+      <div id="final-message">ACCESS DENIED. SYSTEM BREACHED.</div>
+      <button id="retry-btn" onclick="location.reload()">Retry</button>
+    </div>
+    <div id="matrix"><canvas id="matrix-canvas"></canvas></div>
+  </div>
+
+  <div id="analyzing-screen">
+    <canvas id="analyzing-canvas"></canvas>
+    <div id="analyzing-text">Analyzing Input...</div>
+  </div>
+
+  <div class="you-did-it" id="success-msg">✨ You did it, J.P. ✨</div>
+  <canvas id="starfield"></canvas>
+
+  <script>
+    const successSound = document.getElementById('success-sound');
+    const errorSound = document.getElementById('error-sound');
+    const successMsg = document.getElementById("success-msg");
+    const analyzingScreen = document.getElementById("analyzing-screen");
+    const analyzingText = document.getElementById("analyzing-text");
+    successMsg.style.display = "none";
+    
+    const finalMessage = document.getElementById("final-message");
+    const retryBtn = document.getElementById("retry-btn");
+    
+    document.getElementById('submit-btn').addEventListener('click', function(event) {
+      event.preventDefault();
+      const nameInput = document.getElementById('love-name').value.trim().toLowerCase();
+
+      if (nameInput === "ekanth") {
+        document.getElementById("login-form").style.display = "none";
+        analyzingScreen.style.display = "flex";
+        
+        successSound.play();
+
+        typeText(analyzingText, "Analyzing Input...", 50, () => {
+            setTimeout(() => {
+                analyzingText.textContent = "ACCESS GRANTED";
+            }, 1000); // ACCESS GRANTED duration 1 sec.
+
+            setTimeout(() => {
+                analyzingScreen.style.display = "none";
+                successMsg.style.display = "block";
+                initStars();
+
+                setTimeout(() => {
+                    successMsg.style.transition = "transform 1s ease, opacity 1s ease";
+                    successMsg.style.transform = "translate(-50%, -50%) scale(2)";
+                    successMsg.style.opacity = "0";
+                }, 4000);
+
+                setTimeout(() => {
+                    window.location.href = "text.html";
+                }, 6000);
+            }, 3000); // Total duration ko 3 seconds kar diya.
+        });
+
+      } else {
+        errorSound.play();
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("overlay").style.display = "flex";
+        let count = 3;
+        const countdownEl = document.getElementById('countdown');
+        const interval = setInterval(() => {
+          count--;
+          if (count > 0) {
+            countdownEl.textContent = count;
+          } else {
+            clearInterval(interval);
+            countdownEl.style.display = "none";
+            generateMatrixRain();
+            
+            setTimeout(() => {
+              finalMessage.style.display = "block";
+              retryBtn.style.display = "inline-block";
+            }, 3000);
+          }
+        }, 1000);
+      }
+    });
+
+    function typeText(element, text, speed, callback) {
+        let i = 0;
+        element.textContent = '';
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+            } else {
+                clearInterval(interval);
+                if (callback) callback();
+            }
+        }, speed);
+    }
+    
+    function generateMatrixRain() {
+      document.getElementById("matrix").style.display = "block";
+      const canvas = document.getElementById("matrix-canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const letters = '01★⚠#Δ$Ξ¥Ж%πΨ∇☢'.split('');
+      const fontSize = 16;
+      const columns = Math.floor(canvas.width / fontSize);
+      const drops = Array(columns).fill(1);
+
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < drops.length; i++) {
+          const text = letters[Math.floor(Math.random() * letters.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+      setInterval(draw, 33);
+    }
+
+    function createParticle() {
+      const particle = document.createElement("div");
+      particle.classList.add("particle");
+      const size = Math.random() * 8 + 8;
+      particle.style.width = size + "px";
+      particle.style.height = size + "px";
+      particle.style.left = Math.random() * 100 + "vw";
+      particle.style.animationDuration = (Math.random() * 2 + 4) + "s";
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 6000);
+    }
+    setInterval(createParticle, 150);
+
+    function initStars() {
+      const canvas = document.getElementById("starfield");
+      const ctx = canvas.getContext("2d");
+      let w, h;
+      let stars = [];
+      function init() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+        stars = [];
+        for (let i = 0; i < 250; i++) {
+          stars.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            z: Math.random() * w
+          });
+        }
+      }
+      function animate() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#00f0ff';
+        stars.forEach(star => {
+          star.z -= 3;
+          if (star.z <= 0) star.z = w;
+          const k = 128.0 / star.z;
+          const x = (star.x - w / 2) * k + w / 2;
+          const y = (star.y - h / 2) * k + h / 2;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        requestAnimationFrame(animate);
+      }
+      init();
+      animate();
+      window.addEventListener('resize', init);
+    }
+  </script>
+</body>
+</html>

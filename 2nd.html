@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hidden project "The J.P"</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <meta name="theme-color" content="#00ffcc" />
+  <style>
+    :root {
+      --accent: #00ffcc;
+      --glow: rgba(0, 255, 204, 0.4);
+      --error: #ff4d4d;
+    }
+
+    body {
+      margin: 0;
+      background: black;
+      color: var(--accent);
+      font-family: 'Courier New', Courier, Consolas, monospace;
+      overflow-y: auto;
+      transition: background-color 1s ease;
+    }
+
+    .scene {
+      padding: 2rem;
+    }
+
+    .terminal-text {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      padding: 1rem;
+      font-size: 1.05rem;
+      max-height: 40vh;
+      overflow-y: auto;
+      position: relative;
+      z-index: 5;
+    }
+
+    .line-found {
+      color: var(--accent);
+      text-shadow: 0 0 6px var(--accent), 0 0 12px var(--accent);
+      animation: fadeInText 1s ease-in-out;
+    }
+
+    .line-creator {
+      color: #ffff99;
+      text-shadow: 0 0 4px #ffff99, 0 0 8px #ffff99;
+      animation: fadeInText 1s ease-in-out;
+    }
+
+    @keyframes fadeInText {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .typing-cursor::after {
+      content: '|';
+      animation: blink 1s step-start infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .button-group {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .btn {
+      background: black;
+      border: 2px solid var(--accent);
+      padding: 10px 20px;
+      color: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 10px;
+      border-radius: 4px;
+      text-shadow: 0 0 5px var(--accent);
+      box-shadow: 0 0 10px var(--accent) inset, 0 0 10px var(--accent);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+      color: black;
+      text-shadow: none;
+      box-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent), 0 0 40px var(--accent);
+      transform: scale(1.05);
+    }
+
+    .btn.pulse {
+      animation: pulseGlow 1.5s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent); }
+      50% { box-shadow: 0 0 15px var(--accent), 0 0 25px var(--accent); }
+      100% { box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent); }
+    }
+
+    .floating-word {
+      position: absolute;
+      opacity: 0;
+      animation: floatWord linear forwards;
+      pointer-events: none;
+      white-space: nowrap;
+      text-shadow: 0 0 6px #fff, 0 0 12px #fff;
+    }
+
+    @keyframes floatWord {
+      0% {
+        transform: translate(0, 100vh) scale(0.8) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--end-x), var(--end-y)) scale(var(--end-scale)) rotate(var(--end-rotate));
+        opacity: 0;
+      }
+    }
+
+    .ascii-art {
+      font-size: 1.4rem;
+      color: red;
+      text-align: center;
+      margin-top: 2rem;
+      text-shadow: 0 0 15px red, 0 0 25px #ff0000;
+      animation: flicker 1.2s infinite, glitch 2s linear infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes glitch {
+      0% { transform: skewX(0deg); }
+      20% { transform: skewX(5deg); }
+      40% { transform: skewX(-5deg); }
+      60% { transform: skewX(2deg); }
+      80% { transform: skewX(-2deg); }
+      100% { transform: skewX(0deg); }
+    }
+
+    .pulsing-text {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--error);
+      text-shadow: 0 0 10px var(--error), 0 0 15px #ff0000;
+      animation: pulseText 1.5s infinite;
+      margin-top: 1rem;
+    }
+
+    @keyframes pulseText {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .flash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(255,255,255,0.15);
+      animation: flash 0.3s ease-in-out;
+      z-index: 10;
+    }
+
+    @keyframes flash {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    .circle-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -10;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .circle {
+      position: absolute;
+      background: transparent;
+      width: calc(var(--i) * 2.5vmin);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 3px solid rgb(0, 255, 13);
+      transform-style: preserve-3d;
+      transform: rotateX(70deg) translateZ(50px);
+      animation: animate 3s ease-in-out calc(var(--i) * 0.08s) infinite;
+      box-shadow: 0 0 15px rgb(124, 124, 124), inset 0 0 15px rgb(124, 124, 124);
+    }
+
+    @keyframes animate {
+      0%, 100% {
+        transform: rotateX(70deg) translateZ(50px) translateY(0);
+        filter: hue-rotate(0);
+      }
+      50% {
+        transform: rotateX(70deg) translateZ(50px) translateY(-50vmin);
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    #floatingContainer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .neon-btn {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      z-index: 999;
+      background: transparent;
+      color: #00ccff;
+      border: 2px solid #00ccff;
+      padding: 8px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ccff, 0 0 20px #00ccff;
+      text-shadow: 0 0 5px #00ccff;
+      transition: all 0.2s ease;
+    }
+    .neon-btn:hover {
+      background: rgba(0, 204, 255, 0.1);
+      box-shadow: 0 0 15px #00ccff, 0 0 25px #00ccff;
+    }
+
+    /* Cursor Trail */
+    #trailCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+    <button id="musicToggle" class="neon-btn">Background Music: OFF</button>
+    <audio id="bgmAudio" src="bgm.mp3" loop></audio>
+    <audio id="blipSound" src="blip.mp3"></audio>
+
+  <canvas id="trailCanvas"></canvas>
+
+  <div class="circle-background">
+    <div class="circle" style="--i:0;"></div>
+    <div class="circle" style="--i:1;"></div>
+    <div class="circle" style="--i:2;"></div>
+    <div class="circle" style="--i:3;"></div>
+    <div class="circle" style="--i:4;"></div>
+    <div class="circle" style="--i:5;"></div>
+    <div class="circle" style="--i:6;"></div>
+    <div class="circle" style="--i:7;"></div>
+    <div class="circle" style="--i:8;"></div>
+    <div class="circle" style="--i:9;"></div>
+    <div class="circle" style="--i:10;"></div>
+    <div class="circle" style="--i:11;"></div>
+    <div class="circle" style="--i:12;"></div>
+    <div class="circle" style="--i:13;"></div>
+    <div class="circle" style="--i:14;"></div>
+    <div class="circle" style="--i:15;"></div>
+    <div class="circle" style="--i:16;"></div>
+    <div class="circle" style="--i:17;"></div>
+    <div class="circle" style="--i:18;"></div>
+    <div class="circle" style="--i:19;"></div>
+    <div class="circle" style="--i:20;"></div>
+  </div>
+
+  <div id="floatingContainer"></div>
+
+  <div class="scene">
+    <div class="terminal-text" id="mergedTerminal"></div>
+
+    <div id="heartCore" style="display: none;">
+      <div class="ascii-art">❤️ INITIALIZING CORE MEMORY ❤️</div>
+      <div class="pulsing-text">STANDBY FOR FINAL ACTIVATION...</div>
+    </div>
+
+    <div class="final-prompt" style="display:none; margin-top:2rem; color:#fff; text-align:center;">
+      Do you confirm the identity of: <span class="highlight">J.P. YADAV</span>?
+    </div>
+
+    <div class="button-group" style="display:none;">
+      <button class="btn pulse" onclick="goToSurprise()">INITIATE VERIFICATION</button>
+      <button class="btn" id="noBtn" onmouseover="moveButton(this)">NO</button>
+    </div>
+  </div>
+
+  <script>
+    const blipSound = document.getElementById('blipSound');
+    function playBlip() {
+      blipSound.currentTime = 0;
+      blipSound.play();
+    }
+
+    const reconstructionLines = [
+      "> Accessing neural backup system...",
+      "> Scanning archived connection pathways...",
+      "> Identity anomaly detected: UNBREAKABLE FRIENDSHIP.",
+      "> Core tag match: J.P. YADAV — Signature Verified.",
+      "> Emotional frequency: 💚💚💚💚💚 (MAX STABILITY)",
+      "> Initializing timeline integrity rebuild..."
+    ];
+
+    let rIndex = 0;
+    function typeReconstruction() {
+      if (rIndex < reconstructionLines.length) {
+        const line = document.createElement("div");
+        line.className = "line-creator typing-cursor";
+        document.querySelectorAll(".typing-cursor").forEach(el => el.classList.remove("typing-cursor"));
+        line.textContent = reconstructionLines[rIndex];
+        document.getElementById("mergedTerminal").appendChild(line);
+        playBlip();
+        scrollToBottom("mergedTerminal");
+        rIndex++;
+        const delay = 500 + Math.random() * 500; // Variable typing delay
+        setTimeout(typeReconstruction, delay);
+      } else {
+        setTimeout(typeMemories, 1500);
+      }
+    }
+
+    const memories = [
+      "> [LOG ENTRY - 2016] He showed up when no one else did.",
+      "> [LOG ENTRY - 2018] His silence understood what words never could.",
+      "> [LOG ENTRY - 2020] Laughed in chaos. Stayed in storms.",
+      "> [LOG ENTRY - 2022] Not just a friend — my constant.",
+      "> [LOG ENTRY - 2024] He never judged. Just stood beside.",
+      "> [ACCESS GRANTED] Friendship Level: UNBREAKABLE 🔓"
+    ];
+
+    let memIndex = 0;
+    function typeMemories() {
+      if (memIndex < memories.length) {
+        const line = document.createElement("div");
+        line.className = "line-found typing-cursor";
+        document.querySelectorAll(".typing-cursor").forEach(el => el.classList.remove("typing-cursor"));
+        line.textContent = memories[memIndex];
+        document.getElementById("mergedTerminal").appendChild(line);
+        playBlip();
+        scrollToBottom("mergedTerminal");
+        memIndex++;
+        const delay = 700 + Math.random() * 500;
+        setTimeout(typeMemories, delay);
+      } else {
+        showEkanthMessage();
+      }
+    }
+
+    function showEkanthMessage() {
+      const messages = [
+        "> [FINAL ENCODE — FRIENDSHIP PROTOCOL v1.0]",
+        "> Systems crash. People forget. But true bonds outlast decay.",
+        "> This archive isn’t built of data — it's built of moments.",
+        "> When everything else failed, he was the constant heartbeat.",
+        "> Identity etched across every echo: J.P. YADAV.",
+        "> Loyalty that defined legacy. Presence that rewrote silence.",
+        "> This protocol exists because of him. For him.",
+        "> Preparing final tribute protocol…"
+      ];
+
+      let j = 0;
+      function nextLine() {
+        if (j < messages.length) {
+          const line = document.createElement("div");
+          line.className = "line-creator typing-cursor";
+          document.querySelectorAll(".typing-cursor").forEach(el => el.classList.remove("typing-cursor"));
+          line.textContent = messages[j];
+          document.getElementById("mergedTerminal").appendChild(line);
+          playBlip();
+          scrollToBottom("mergedTerminal");
+          j++;
+          const delay = 800 + Math.random() * 600;
+          setTimeout(nextLine, delay);
+        } else {
+          showHeartCore();
+        }
+      }
+      nextLine();
+    }
+
+    function showHeartCore() {
+      document.getElementById("heartCore").style.display = "block";
+      const flash = document.createElement('div');
+      flash.className = 'flash';
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 300);
+      setTimeout(() => {
+        document.querySelector(".final-prompt").style.display = "block";
+        document.querySelector(".button-group").style.display = "block";
+      }, 3500);
+    }
+
+    function goToSurprise() {
+      document.body.style.transition = "opacity 1s ease";
+      document.body.style.opacity = 0;
+      setTimeout(() => {
+        window.location.href = "index2.html";
+      }, 1000);
+    }
+
+    function moveButton(btn) {
+      const maxX = window.innerWidth - btn.offsetWidth;
+      const maxY = window.innerHeight - btn.offsetHeight;
+      const randX = Math.floor(Math.random() * maxX);
+      const randY = Math.floor(Math.random() * maxY);
+      btn.style.position = "absolute";
+      btn.style.left = `${randX}px`;
+      btn.style.top = `${randY}px`;
+      btn.style.transition = "top 0.3s, left 0.3s";
+    }
+
+    function scrollToBottom(id) {
+      const el = document.getElementById(id);
+      el.scrollTo({
+        top: el.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    const words = [
+      "LOYALTY", "BROTHERHOOD", "TRUST",
+      "TRUE FRIEND", "JP", "FRI3NDSHIP",
+      "DEAREST FRI3ND", "EKANTH"
+    ];
+
+    const neonColors = [
+      "#00ffcc", "#00ffff", "#ff00ff", "#ffff00", "#ff66cc", "#66ff66"
+    ];
+
+    function createFloatingWord() {
+      const span = document.createElement("span");
+      span.className = "floating-word";
+      span.textContent = words[Math.floor(Math.random() * words.length)];
+      span.style.left = Math.random() * 100 + "vw";
+      span.style.top = "100vh"; // Start from bottom
+      span.style.zIndex = Math.floor(Math.random() * 5) + 1;
+      span.style.fontSize = (0.9 + Math.random() * 0.8) + "rem";
+      span.style.color = neonColors[Math.floor(Math.random() * neonColors.length)];
+      span.style.setProperty("--end-x", (Math.random() * 200 - 100) + "vw"); // Random horizontal movement
+      span.style.setProperty("--end-y", (Math.random() * -120) + "vh"); // Moves up
+      span.style.setProperty("--end-scale", (0.8 + Math.random() * 0.4));
+      span.style.setProperty("--end-rotate", (Math.random() * 360) + "deg"); // Rotate randomly
+      span.style.animationDuration = (6 + Math.random() * 6) + "s";
+      document.getElementById("floatingContainer").appendChild(span);
+      span.addEventListener("animationend", () => span.remove());
+    }
+
+    setInterval(createFloatingWord, 1000 + Math.random() * 1000);
+
+    const musicToggle = document.getElementById('musicToggle');
+    const bgm = document.getElementById('bgmAudio');
+    let isMusicOn = false;
+
+    musicToggle.addEventListener('click', () => {
+      if (isMusicOn) {
+        bgm.pause();
+        musicToggle.textContent = 'Background Music: OFF';
+        isMusicOn = false;
+      } else {
+        bgm.play().catch(e => console.log("Audio playback failed:", e));
+        musicToggle.textContent = 'Background Music: ON';
+        isMusicOn = true;
+      }
+    });
+
+    // Cursor Trail JavaScript
+    var trailCtx;
+    var f;
+    var pos = { x: 0, y: 0 };
+    var trailLines = [];
+    var E = {
+        debug: true,
+        friction: 0.5,
+        trails: 20,
+        size: 50,
+        dampening: 0.25,
+        tension: 0.98,
+    };
+    function SineWaveValue(e) {
+        this.init(e || {});
+    }
+    SineWaveValue.prototype = {
+        init: function (e) {
+            this.phase = e.phase || 0;
+            this.offset = e.offset || 0;
+            this.frequency = e.frequency || 0.001;
+            this.amplitude = e.amplitude || 1;
+        },
+        update: function () {
+            this.phase += this.frequency;
+            return this.offset + Math.sin(this.phase) * this.amplitude;
+        },
+        value: function () {
+            return this.offset + Math.sin(this.phase) * this.amplitude;
+        },
+    };
+    function Node() {
+        this.x = 0;
+        this.y = 0;
+        this.vx = 0;
+        this.vy = 0;
+    }
+    function Line(e) {
+        this.init(e || {});
+    }
+    Line.prototype = {
+        init: function (e) {
+            this.spring = e.spring + 0.1 * Math.random() - 0.02;
+            this.friction = E.friction + 0.01 * Math.random() - 0.002;
+            this.nodes = [];
+            for (var n = 0; n < E.size; n++) {
+                var t = new Node();
+                t.x = pos.x;
+                t.y = pos.y;
+                this.nodes.push(t);
+            }
+        },
+        update: function () {
+            var e = this.spring, t = this.nodes[0];
+            t.vx += (pos.x - t.x) * e;
+            t.vy += (pos.y - t.y) * e;
+            for (var n, i = 0, a = this.nodes.length; i < a; i++) {
+                t = this.nodes[i];
+                if (i > 0) {
+                    n = this.nodes[i - 1];
+                    t.vx += (n.x - t.x) * e;
+                    t.vy += (n.y - t.y) * e;
+                    t.vx += n.vx * E.dampening;
+                    t.vy += n.vy * E.dampening;
+                }
+                t.vx *= this.friction;
+                t.vy *= this.friction;
+                t.x += t.vx;
+                t.y += t.vy;
+                e *= E.tension;
+            }
+        },
+        draw: function () {
+            var e, t, n = this.nodes[0].x, i = this.nodes[0].y;
+            trailCtx.beginPath();
+            trailCtx.moveTo(n, i);
+            for (var a = 1, o = this.nodes.length - 2; a < o; a++) {
+                e = this.nodes[a];
+                t = this.nodes[a + 1];
+                n = 0.5 * (e.x + t.x);
+                i = 0.5 * (e.y + t.y);
+                trailCtx.quadraticCurveTo(e.x, e.y, n, i);
+            }
+            e = this.nodes[a];
+            t = this.nodes[a + 1];
+            trailCtx.quadraticCurveTo(e.x, e.y, t.x, t.y);
+            trailCtx.stroke();
+            trailCtx.closePath();
+        },
+    };
+    function updatePos(e) {
+        if (e.touches) {
+            pos.x = e.touches[0].pageX;
+            pos.y = e.touches[0].pageY;
+        } else {
+            pos.x = e.clientX;
+            pos.y = e.clientY;
+        }
+    }
+    function setupLines() {
+        trailLines = [];
+        for (var i = 0; i < E.trails; i++) {
+            trailLines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+        }
+    }
+    function render() {
+        if (trailCtx.running) {
+            trailCtx.globalCompositeOperation = 'source-over';
+            trailCtx.clearRect(0, 0, trailCtx.canvas.width, trailCtx.canvas.height);
+            trailCtx.globalCompositeOperation = 'lighter';
+            trailCtx.strokeStyle = 'hsla(' + Math.round(f.update()) + ',50%,20%,0.8)';
+            trailCtx.lineWidth = 3;
+            for (var i = 0; i < E.trails; i++) {
+                trailLines[i].update();
+                trailLines[i].draw();
+            }
+            trailCtx.frame++;
+            window.requestAnimationFrame(render);
+        }
+    }
+    function resizeTrailCanvas() {
+        trailCtx.canvas.width = window.innerWidth;
+        trailCtx.canvas.height = window.innerHeight;
+    }
+    function initCursorTrail() {
+        const canvas = document.getElementById('trailCanvas');
+        if (!canvas) {
+          console.error('Trail canvas not found!');
+          return;
+        }
+        trailCtx = canvas.getContext('2d');
+        trailCtx.running = true;
+        trailCtx.frame = 1;
+        f = new SineWaveValue({
+            phase: Math.random() * 2 * Math.PI,
+            amplitude: 85,
+            frequency: 0.0015,
+            offset: 285,
+        });
+        document.addEventListener('mousemove', updatePos);
+        document.addEventListener('touchmove', updatePos, { passive: false });
+        document.addEventListener('touchstart', updatePos, { passive: false });
+        window.addEventListener('resize', resizeTrailCanvas);
+        window.addEventListener('focus', () => {
+            if (!trailCtx.running) {
+                trailCtx.running = true;
+                render();
+            }
+        });
+        window.addEventListener('blur', () => {
+            trailCtx.running = false;
+        });
+        resizeTrailCanvas();
+        setupLines();
+        render();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      typeReconstruction();
+      initCursorTrail(); 
+      createFloatingWord();
+    });
+  </script>
+</body>
+</html>

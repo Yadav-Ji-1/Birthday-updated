@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiverse Nexus Point</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        :root {
+            --dark-bg: #03010f;
+            --portal-color-1: #00ffff;
+            --portal-color-2: #ff00ff;
+            --portal-color-3: #9b59b6;
+            --button-bg-1: var(--portal-color-1);
+            --button-bg-2: var(--portal-color-2);
+            --disabled-bg: #555555;
+            --text-color: #ecf0f1;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%),
+                              url("https://www.transparenttextures.com/patterns/dark-matter.png");
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+        }
+
+        .title {
+            font-size: 3em;
+            margin-bottom: 80px;
+            color: #fff;
+            text-shadow: 0 0 10px #fff, 0 0 20px var(--portal-color-1), 0 0 30px var(--portal-color-2);
+            animation: flicker 1.5s infinite alternate;
+            z-index: 10;
+        }
+
+        @keyframes flicker {
+            0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px var(--portal-color-1); }
+            50% { text-shadow: 0 0 12px #fff, 0 0 25px var(--portal-color-2), 0 0 40px var(--portal-color-1); }
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: calc(100% - 150px);
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .portal-column {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 1s ease-in-out;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .portal-column.fade-out {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .portal-column.fade-in {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .portal {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(255, 255, 255, 0.2);
+            animation: pulse-portal 3s infinite alternate;
+        }
+
+        .portal::before, .portal::after, .portal .swirl {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            top: -25%;
+            left: -25%;
+            width: 150%;
+            height: 150%;
+            z-index: 0;
+        }
+
+        .portal::before {
+            background: linear-gradient(45deg, transparent, var(--portal-color-1), transparent);
+            animation: swirl 8s linear infinite;
+        }
+
+        .portal::after {
+            background: linear-gradient(-45deg, transparent, var(--portal-color-2), transparent);
+            animation: swirl 12s linear infinite reverse;
+        }
+
+        .portal .swirl {
+            background: radial-gradient(circle, transparent 0%, rgba(255, 255, 255, 0.1) 10%, rgba(0, 0, 0, 0.7) 70%);
+            animation: swirl-bg 15s linear infinite;
+        }
+
+        @keyframes pulse-portal {
+            from { transform: scale(1); box-shadow: 0 0 60px rgba(255, 255, 255, 0.2); }
+            to { transform: scale(1.05); box-shadow: 0 0 80px rgba(255, 255, 255, 0.4); }
+        }
+
+        @keyframes swirl {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes swirl-bg {
+            from { transform: rotate(0deg) scale(1); }
+            to { transform: rotate(360deg) scale(1.2); }
+        }
+
+        .portal-center-content {
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.2) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            text-shadow: 0 0 10px #fff;
+            padding: 20px; /* Add some padding to prevent text from touching the edge */
+            box-sizing: border-box; /* Include padding in the element's total width and height */
+        }
+
+        .button {
+            margin-top: 40px;
+            padding: 15px 30px;
+            font-size: 1em;
+            font-family: 'Orbitron', sans-serif;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            color: var(--dark-bg);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        #reptile-btn { background-color: var(--button-bg-1); }
+        #reptile-btn:hover:not(:disabled) { box-shadow: 0 0 20px var(--button-bg-1); transform: scale(1.05); }
+
+        #check-pc-btn { background-color: var(--button-bg-2); }
+        #check-pc-btn:hover:not(:disabled) { box-shadow: 0 0 20px var(--button-bg-2); transform: scale(1.05); }
+
+        .button:disabled {
+            background-color: var(--disabled-bg);
+            cursor: not-allowed;
+            color: #999999;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="title">Multiverse Nexus Point</h1>
+
+    <div class="container" id="portal-container">
+        <div class="portal-column" id="portal-1">
+            <h2>Reptile Experiment Realm</h2>
+            <div class="portal">
+                <div class="swirl"></div>
+                <div class="portal-center-content">
+                    //...Reptilian Energy...//
+                </div>
+            </div>
+            <a href="reptile.html" id="reptile-link">
+                <button class="button" id="reptile-btn">See Reptile Experiment</button>
+            </a>
+        </div>
+        
+        <div class="portal-column" id="portal-2">
+            <h2>PC Analysis Dimension</h2>
+            <div class="portal">
+                <div class="swirl"></div>
+                <div class="portal-center-content">
+                    //...PC Anomaly Detected...//
+                </div>
+            </div>
+            <a href="realindex.html">
+                <button class="button" id="check-pc-btn" disabled>Check PC</button>
+            </a>
+        </div>
+    </div>
+
+  <script>
+    const portal1 = document.getElementById('portal-1');
+    const portal2 = document.getElementById('portal-2');
+    const container = document.getElementById('portal-container');
+    const portals = [portal1, portal2];
+
+    const checkPcBtn = document.getElementById('check-pc-btn');
+
+    // This function checks if two rectangles (portals) are overlapping
+    function checkOverlap(rect1, rect2) {
+        return !(
+            rect1.right < rect2.left ||
+            rect1.left > rect2.right ||
+            rect1.bottom < rect2.top ||
+            rect1.top > rect2.bottom
+        );
+    }
+
+    // This function generates a random position that doesn't overlap with other portals
+    function getRandomNonOverlappingPosition(existingPositions) {
+        const containerRect = container.getBoundingClientRect();
+        const portalWidth = portal1.offsetWidth;
+        const portalHeight = portal1.offsetHeight;
+        
+        const maxX = containerRect.width - portalWidth;
+        const maxY = containerRect.height - portalHeight;
+
+        let newPos;
+        let isOverlapping = true;
+        let attempts = 0;
+        const maxAttempts = 50; // To prevent an infinite loop
+
+        while (isOverlapping && attempts < maxAttempts) {
+            newPos = {
+                x: Math.floor(Math.random() * maxX),
+                y: Math.floor(Math.random() * maxY)
+            };
+
+            const newRect = {
+                left: newPos.x,
+                right: newPos.x + portalWidth,
+                top: newPos.y,
+                bottom: newPos.y + portalHeight
+            };
+
+            isOverlapping = false;
+            for (const existingPos of existingPositions) {
+                const existingRect = {
+                    left: existingPos.x,
+                    right: existingPos.x + portalWidth,
+                    top: existingPos.y,
+                    bottom: existingPos.y + portalHeight
+                };
+                if (checkOverlap(newRect, existingRect)) {
+                    isOverlapping = true;
+                    break;
+                }
+            }
+            attempts++;
+        }
+        
+        if (isOverlapping) {
+            return { x: Math.floor(Math.random() * maxX), y: Math.floor(Math.random() * maxY) };
+        }
+        
+        return newPos;
+    }
+
+    function animatePortals() {
+        let positions = [];
+        
+        for (let i = 0; i < portals.length; i++) {
+            const newPos = getRandomNonOverlappingPosition(positions);
+            positions.push(newPos);
+        }
+        
+        portals.forEach(p => p.classList.add('fade-out'));
+        
+        setTimeout(() => {
+            portals.forEach((p, index) => {
+                p.style.left = `${positions[index].x}px`;
+                p.style.top = `${positions[index].y}px`;
+                p.classList.remove('fade-out');
+                p.classList.add('fade-in');
+            });
+        }, 500);
+        
+        setTimeout(() => {
+            portals.forEach(p => p.classList.remove('fade-in'));
+        }, 1000);
+    }
+
+    // Check localStorage and update the button state on page load
+    window.addEventListener('load', () => {
+        const hasVisitedReptile = localStorage.getItem('reptileVisited');
+        if (hasVisitedReptile === 'true') {
+            checkPcBtn.disabled = false;
+        }
+
+        const pos1 = getRandomNonOverlappingPosition([]);
+        portal1.style.left = `${pos1.x}px`;
+        portal1.style.top = `${pos1.y}px`;
+        
+        const pos2 = getRandomNonOverlappingPosition([pos1]);
+        portal2.style.left = `${pos2.x}px`;
+        portal2.style.top = `${pos2.y}px`;
+    });
+    
+    setInterval(animatePortals, 5000);
+
+    document.getElementById('reptile-link').addEventListener('click', function(event) {
+        // Save state to localStorage when the link is clicked
+        localStorage.setItem('reptileVisited', 'true');
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WELCOME TO EKANTH'S WORLD</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: black;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+    }
+    .scene {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .scene.active {
+      opacity: 1;
+      z-index: 2;
+    }
+    .ascii-art {
+      width: 100%;
+      margin-bottom: 20px;
+      line-height: 1.3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: scale(0.6);
+      transform-origin: top center;
+    }
+    .pulsing-text.override-flash {
+      font-size: 22px;
+      margin-top: 30px;
+      animation: flashGlow 1s infinite alternate;
+      color: #ff0033;
+      text-shadow: 0 0 8px #ff0033, 0 0 15px #ff0033, 0 0 25px #ff0033;
+    }
+    .terminal-text {
+      width: 100%;
+      max-width: 720px;
+      text-align: left;
+      color: #00ff66;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    @keyframes flashGlow {
+      0% { opacity: 0.5; text-shadow: 0 0 4px #ff0033; }
+      100% { opacity: 1; text-shadow: 0 0 15px #ff0033, 0 0 30px #ff0033; }
+    }
+    @keyframes pulse {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    /* === Scene 2 Styles === */
+    #matrixCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      display: none;
+    }
+    .terminal {
+      position: absolute;
+      top: 5%;
+      left: 5%;
+      width: 90%;
+      z-index: 2;
+      font-size: 1.1rem;
+      animation: crtFlicker 1.5s infinite alternate;
+    }
+    .photo-scan {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 150px;
+      height: 180px;
+      border: 2px solid #0f0;
+      background: #111 url('https://via.placeholder.com/150x180?text=Scanning...') center/cover no-repeat;
+      z-index: 3;
+      box-shadow: 0 0 10px #0f0;
+      display: none;
+      overflow: hidden;
+      animation: scanBorder 1s infinite alternate;
+    }
+    .photo-scan::before {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      top: -75px;
+      left: -75px;
+      border-radius: 50%;
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 60px 30px rgba(0, 255, 0, 0.3);
+      animation: pulse 2s infinite;
+      z-index: -1;
+    }
+    .scanner-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(0, 255, 0, 0.6);
+      box-shadow: 0 0 10px #0f0;
+      animation: scanLine 2s linear infinite;
+      z-index: 4;
+    }
+    .red-cross {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 150px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: red;
+      background: rgba(0,0,0,0.6);
+      z-index: 4;
+      display: none;
+    }
+    .final-prompt, .button-group {
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .final-prompt {
+      position: absolute;
+      bottom: 20%;
+      width: 100%;
+      text-align: center;
+      font-size: 1.5rem;
+      color: #0ff;
+    }
+    .button-group {
+      position: absolute;
+      bottom: 10%;
+      width: 100%;
+      text-align: center;
+    }
+    .btn {
+      display: inline-block;
+      margin: 0 20px;
+      padding: 12px 25px;
+      font-size: 1.2rem;
+      color: #0f0;
+      border: 2px solid #0f0;
+      background: transparent;
+      cursor: pointer;
+      text-shadow: 0 0 5px #0f0;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #0f0;
+      color: black;
+      transform: scale(1.05) rotate(-1deg);
+      filter: brightness(1.5);
+    }
+    @keyframes crtFlicker { 0% { opacity: 1; } 50% { opacity: 0.97; } 100% { opacity: 1; } }
+    @keyframes scanBorder { from { box-shadow: 0 0 5px #0f0; } to { box-shadow: 0 0 20px #0f0; } }
+    @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.2; } 50% { transform: scale(1.3); opacity: 0.4; } }
+    .line-scan { color: #00ffcc; text-shadow: 0 0 5px #00ffcc; }
+    .line-analyze { color: #99ff00; text-shadow: 0 0 5px #99ff00; }
+    .line-fail { color: #ff0033; text-shadow: 0 0 8px #ff0033; }
+    .line-warning { color: #ff9900; text-shadow: 0 0 6px #ff9900; }
+    .line-purge { color: #66ffff; text-shadow: 0 0 5px #66ffff; }
+    .line-erase { color: #cc99ff; text-shadow: 0 0 6px #cc99ff; }
+    .line-recover { color: #33ccff; text-shadow: 0 0 5px #33ccff; }
+    .line-search { color: #ffff66; text-shadow: 0 0 6px #ffff66; }
+    .line-found { color: #00ff99; text-shadow: 0 0 8px #00ff99; font-weight: bold; }
+    .line-creator { color: #00ffff; text-shadow: 0 0 6px #00ffff; font-weight: bold; }
+
+    /* Cursor Trail */
+    #trailCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 100; /* Updated z-index to be above other content */
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="scene1" class="scene active">
+    <div class="ascii-art">
+<pre>
+█▀ ▀█▀ ▄▀█ █▀█ ▀█▀ █ █▄░█ █▀▀     █▀ █▄█ █▀ ▀█▀ █▀▀ █▀▄▀█
+▄█ ░█░ █▀█ █▀▄ ░█░ █ █░▀█ █▄█     ▄█ ░█░ ▄█ ░█░ ██▄ █░▀░█
+</pre>
+    </div>
+    <div class="terminal-text" id="bootLines"></div>
+    <div class="pulsing-text override-flash">OVERRIDE PROTOCOL INJECTED</div>
+  </div>
+
+  <canvas id="matrixCanvas"></canvas>
+  <canvas id="trailCanvas"></canvas>
+  <div id="mainInterface">
+    <div class="photo-scan" id="photoBox">
+      <div class="scanner-line"></div>
+    </div>
+    <div class="red-cross" id="redCross">❌</div>
+    <div class="terminal" id="terminal"></div>
+    <div class="final-prompt">A hidden identity protocol was found, left behind by Mr. Ekanth.<br>Do you wish to activate it?</div>
+    <div class="button-group">
+      <button class="btn" onclick="acceptProtocol()">YES</button>
+      <button class="btn" id="noBtn" onmouseover="moveButton()">NO</button>
+    </div>
+  </div>
+
+  <script>
+    const bootLines = [
+      "[BOOT] Initializing secure shell...",
+      "[INFO] Performing hardware integrity checks...",
+      "[OK] CPU cores online: 8x 3.6GHz",
+      "[INFO] Memory map... OK",
+      "[OK] System checksum verified",
+      "[INFO] BIOS version: EK-X99 v3.1",
+      "[SECURE] Injecting override protocol...",
+      "[ACCESS] Authentication bypassed",
+      "[INFO] Mounting encrypted drive...",
+      "[NOTICE] Welcome back, Operator"
+    ];
+    const bootLinesEl = document.getElementById("bootLines");
+    let index = 0;
+    function showNextLine() {
+      if (index < bootLines.length) {
+        bootLinesEl.innerHTML += "&gt; " + bootLines[index] + "<br>";
+        index++;
+        setTimeout(showNextLine, 600);
+      } else {
+        setTimeout(() => {
+          document.getElementById("scene1").classList.remove("active");
+          document.getElementById("mainInterface").style.opacity = 1;
+          document.getElementById("matrixCanvas").style.display = "block";
+          startMatrix();
+          typeLines();
+        }, 1000);
+      }
+    }
+    setTimeout(showNextLine, 1000);
+
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+    let chars = "アァイィウヴエカキクケコサシスセソタチツナニハヒフヘホマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+    let fontSize = 14;
+    let columns = Math.floor(w / fontSize);
+    let drops = Array(columns).fill(1);
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#0f0";
+      ctx.font = fontSize + "px monospace";
+      for (let i = 0; i < drops.length; i++) {
+        let text = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > h && Math.random() > 0.975) drops[i]++;
+        drops[i]++;
+      }
+    }
+    function startMatrix() {
+      setInterval(drawMatrix, 50);
+    }
+
+    const lines = [
+      "Scanning identity...",
+      "Analyzing facial features...",
+      "Verification failed.",
+      "⚠️ Unauthorized individual detected.",
+      "Purging temporary system cache...",
+      "Erasing classified access logs...",
+      "Attempting recovery protocol...",
+      "Searching encrypted archives...",
+      "Found: last backup identity protocol",
+      "Creator: Mr. Ekanth"
+    ];
+    const lineClasses = [
+      "line-scan", "line-analyze", "line-fail", "line-warning", "line-purge",
+      "line-erase", "line-recover", "line-search", "line-found", "line-creator"
+    ];
+    let i = 0;
+    function typeLines() {
+      const term = document.getElementById("terminal");
+      const photo = document.getElementById("photoBox");
+      const redCross = document.getElementById("redCross");
+      if (i < lines.length) {
+        const line = document.createElement("div");
+        line.className = lineClasses[i];
+        line.textContent = "> " + lines[i];
+        term.appendChild(line);
+        if (i === 0) photo.style.display = "block";
+        if (i === 2) redCross.style.display = "flex";
+        if (i === 3) {
+          setTimeout(() => {
+            photo.style.display = "none";
+            redCross.style.display = "none";
+          }, 2000);
+        }
+        i++;
+        setTimeout(typeLines, 1000);
+      } else {
+        setTimeout(() => {
+          document.querySelector(".final-prompt").style.display = "block";
+          document.querySelector(".button-group").style.display = "block";
+          setTimeout(() => {
+            document.querySelector(".final-prompt").style.opacity = 1;
+            document.querySelector(".button-group").style.opacity = 1;
+          }, 100);
+        }, 1500);
+      }
+    }
+
+    function acceptProtocol() {
+      window.location.href = "2nd.html";
+    }
+    function moveButton() {
+      const btn = document.getElementById("noBtn");
+      const newX = Math.random() * 80 + 5;
+      const newY = Math.random() * 60 + 10;
+      btn.style.position = "absolute";
+      btn.style.left = `${newX}%`;
+      btn.style.top = `${newY}%`;
+    }
+
+    // Cursor Trail JavaScript
+    var trailCtx;
+    var f;
+    var pos = { x: 0, y: 0 };
+    var trailLines = [];
+    var E = {
+        debug: true,
+        friction: 0.5,
+        trails: 20,
+        size: 50,
+        dampening: 0.25,
+        tension: 0.98,
+    };
+    function SineWaveValue(e) {
+        this.init(e || {});
+    }
+    SineWaveValue.prototype = {
+        init: function (e) {
+            this.phase = e.phase || 0;
+            this.offset = e.offset || 0;
+            this.frequency = e.frequency || 0.001;
+            this.amplitude = e.amplitude || 1;
+        },
+        update: function () {
+            this.phase += this.frequency;
+            return this.offset + Math.sin(this.phase) * this.amplitude;
+        },
+        value: function () {
+            return this.offset + Math.sin(this.phase) * this.amplitude;
+        },
+    };
+    function Node() {
+        this.x = 0;
+        this.y = 0;
+        this.vx = 0;
+        this.vy = 0;
+    }
+    function Line(e) {
+        this.init(e || {});
+    }
+    Line.prototype = {
+        init: function (e) {
+            this.spring = e.spring + 0.1 * Math.random() - 0.02;
+            this.friction = E.friction + 0.01 * Math.random() - 0.002;
+            this.nodes = [];
+            for (var n = 0; n < E.size; n++) {
+                var t = new Node();
+                t.x = pos.x;
+                t.y = pos.y;
+                this.nodes.push(t);
+            }
+        },
+        update: function () {
+            var e = this.spring, t = this.nodes[0];
+            t.vx += (pos.x - t.x) * e;
+            t.vy += (pos.y - t.y) * e;
+            for (var n, i = 0, a = this.nodes.length; i < a; i++) {
+                t = this.nodes[i];
+                if (i > 0) {
+                    n = this.nodes[i - 1];
+                    t.vx += (n.x - t.x) * e;
+                    t.vy += (n.y - t.y) * e;
+                    t.vx += n.vx * E.dampening;
+                    t.vy += n.vy * E.dampening;
+                }
+                t.vx *= this.friction;
+                t.vy *= this.friction;
+                t.x += t.vx;
+                t.y += t.vy;
+                e *= E.tension;
+            }
+        },
+        draw: function () {
+            var e, t, n = this.nodes[0].x, i = this.nodes[0].y;
+            trailCtx.beginPath();
+            trailCtx.moveTo(n, i);
+            for (var a = 1, o = this.nodes.length - 2; a < o; a++) {
+                e = this.nodes[a];
+                t = this.nodes[a + 1];
+                n = 0.5 * (e.x + t.x);
+                i = 0.5 * (e.y + t.y);
+                trailCtx.quadraticCurveTo(e.x, e.y, n, i);
+            }
+            e = this.nodes[a];
+            t = this.nodes[a + 1];
+            trailCtx.quadraticCurveTo(e.x, e.y, t.x, t.y);
+            trailCtx.stroke();
+            trailCtx.closePath();
+        },
+    };
+    function updatePos(e) {
+        if (e.touches) {
+            pos.x = e.touches[0].pageX;
+            pos.y = e.touches[0].pageY;
+        } else {
+            pos.x = e.clientX;
+            pos.y = e.clientY;
+        }
+    }
+    function setupLines() {
+        trailLines = [];
+        for (var i = 0; i < E.trails; i++) {
+            trailLines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+        }
+    }
+    function render() {
+        if (trailCtx.running) {
+            trailCtx.globalCompositeOperation = 'source-over';
+            trailCtx.clearRect(0, 0, trailCtx.canvas.width, trailCtx.canvas.height);
+            trailCtx.globalCompositeOperation = 'lighter';
+            trailCtx.strokeStyle = 'hsla(' + Math.round(f.update()) + ',50%,20%,0.8)';
+            trailCtx.lineWidth = 3;
+            for (var i = 0; i < E.trails; i++) {
+                trailLines[i].update();
+                trailLines[i].draw();
+            }
+            trailCtx.frame++;
+            window.requestAnimationFrame(render);
+        }
+    }
+    function resizeTrailCanvas() {
+        const canvas = document.getElementById('trailCanvas');
+        if (canvas) {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+    }
+    function initCursorTrail() {
+        const canvas = document.getElementById('trailCanvas');
+        if (!canvas) {
+          console.error('Trail canvas not found!');
+          return;
+        }
+        trailCtx = canvas.getContext('2d');
+        trailCtx.running = true;
+        trailCtx.frame = 1;
+        f = new SineWaveValue({
+            phase: Math.random() * 2 * Math.PI,
+            amplitude: 85,
+            frequency: 0.0015,
+            offset: 285,
+        });
+        document.addEventListener('mousemove', updatePos);
+        document.addEventListener('touchmove', updatePos, { passive: false });
+        document.addEventListener('touchstart', updatePos, { passive: false });
+        window.addEventListener('resize', resizeTrailCanvas);
+        window.addEventListener('focus', () => {
+            if (!trailCtx.running) {
+                trailCtx.running = true;
+                render();
+            }
+        });
+        window.addEventListener('blur', () => {
+            trailCtx.running = false;
+        });
+        resizeTrailCanvas();
+        setupLines();
+        render();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      showNextLine();
+      initCursorTrail(); 
+    });
+  </script>
+</body>
+</html>

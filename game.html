@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Piece Birthday Adventure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #000033, #2b2b2b, #000033, #004d99);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Creepster', cursive;
+            color: #ff9900;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #game-container {
+            max-width: 900px;
+            margin: 20px auto;
+            border: 5px solid #ff9900;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: rgba(68, 68, 68, 0.9);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            backdrop-filter: blur(5px);
+        }
+
+        .screen {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            width: 100%;
+        }
+
+        #map-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background: radial-gradient(circle, rgba(0,77,153,0.8) 0%, rgba(0,77,153,1) 70%, #004d99 100%);
+            border: 3px solid #ff9900;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .island-marker {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 153, 0, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            font-size: 12px;
+            line-height: 1.2;
+            padding: 5px;
+            box-sizing: border-box;
+            text-align: center;
+            opacity: 1;
+        }
+        
+        .island-marker:hover:not(.visited) {
+            transform: scale(1.1);
+            background-color: rgba(255, 153, 0, 1);
+        }
+
+        .island-marker.visited {
+            background-color: rgba(100, 100, 100, 0.5);
+            cursor: not-allowed;
+            transform: scale(1.0);
+            border-color: #777;
+            opacity: 0.7;
+        }
+
+        .marker-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        #alvida { top: 30%; left: 15%; }
+        #loguetown { top: 60%; left: 25%; }
+        #drum { top: 40%; left: 40%; }
+        #alabasta { top: 70%; left: 60%; }
+        #skypiea { top: 20%; left: 75%; }
+        #bounty-board { top: 5%; left: 50%; }
+        #final { top: 45%; left: 85%; }
+
+        #info-panel {
+            background-color: #333;
+            border: 2px solid #ff9900;
+            border-radius: 8px;
+            padding: 15px;
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #info-panel h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        
+        .difficulty-btn {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #ff9900;
+            background-color: #444;
+            color: #ff9900;
+            transition: all 0.2s ease;
+        }
+        
+        .difficulty-btn:hover {
+            background-color: #ff9900;
+            color: #444;
+            transform: scale(1.05);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #ff9900;
+            color: #444;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #ffb347;
+            transform: translateY(-2px);
+        }
+        
+        input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 250px;
+            font-size: 16px;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: border-color 0.2s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ff9900;
+        }
+
+        #challenge-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #challenge-options button {
+            margin: 5px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            font-family: 'Roboto', sans-serif;
+            font-size: 20px;
+            max-width: 80%;
+            background-color: #444;
+            color: #f0f0f0;
+        }
+
+        .modal.correct-modal {
+            border: 4px solid #32CD32;
+        }
+
+        .modal.incorrect-modal {
+            border: 4px solid #ff474c;
+        }
+
+        .modal h3 {
+            margin: 0 0 10px 0;
+            font-family: 'Creepster', cursive;
+        }
+
+        .modal p {
+            margin: 0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .floating-ship {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            font-size: 32px;
+            color: #f0f0f0;
+            animation: float-ship 4s ease-in-out infinite;
+        }
+
+        @keyframes float-ship {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Happy Birthday, Pirate King!</h1>
+        <div id="welcome-screen" class="screen">
+            <h2>Welcome to the Grand Line Adventure!</h2>
+            <p>Your journey to become the Pirate King begins now. Visit each island to face its unique challenge and earn a bounty!</p>
+            <label for="playerName">Enter your pirate name:</label>
+            <input type="text" id="playerName" placeholder="Monkey D. Luffy">
+            <button onclick="showDifficultyScreen()">Start Your Journey!</button>
+        </div>
+        
+        <div id="difficulty-screen" class="screen" style="display: none;">
+            <h2>Choose Your Difficulty!</h2>
+            <button class="difficulty-btn" onclick="startGame('simple')">Simple (Easy)</button>
+            <button class="difficulty-btn" onclick="startGame('average')">Average</button>
+            <button class="difficulty-btn" onclick="startGame('hard')">Hard (Pirate King Level)</button>
+        </div>
+
+        <div id="game-screen" class="screen" style="display:none;">
+            <div id="map-container">
+                <div class="floating-ship"><i class="fas fa-ship"></i></div>
+                <div id="alvida" class="island-marker" onclick="visitIsland('Alvida\'s Island')">
+                    <i class="fas fa-ship marker-icon"></i> Alvida's Island
+                </div>
+                <div id="loguetown" class="island-marker" onclick="visitIsland('Loguetown')">
+                    <i class="fas fa-flag marker-icon"></i> Loguetown
+                </div>
+                <div id="drum" class="island-marker" onclick="visitIsland('Drum Island')">
+                    <i class="fas fa-snowflake marker-icon"></i> Drum Island
+                </div>
+                <div id="alabasta" class="island-marker" onclick="visitIsland('Alabasta')">
+                    <i class="fas fa-city marker-icon"></i> Alabasta
+                </div>
+                <div id="skypiea" class="island-marker" onclick="visitIsland('Skypiea')">
+                    <i class="fas fa-cloud marker-icon"></i> Skypiea
+                </div>
+                <div id="bounty-board" class="island-marker" onclick="visitIsland('Bounty Board')">
+                    <i class="fas fa-file-alt marker-icon"></i> Bounty Board
+                </div>
+                <div id="final" class="island-marker" onclick="visitIsland('The Final Island')">
+                    <i class="fas fa-crown marker-icon"></i> The Final Island
+                </div>
+            </div>
+            <div id="info-panel">
+                <h3>Captain: <span id="captain-name"></span></h3>
+                <h3>Bounty: <span id="bounty-counter">0</span> Berries</h3>
+                <h3>Difficulty: <span id="difficulty-level"></span></h3>
+            </div>
+        </div>
+
+        <div id="challenge-screen" class="screen" style="display:none;">
+            <h2 id="challenge-title"></h2>
+            <p id="challenge-description"></p>
+            <div id="challenge-content"></div>
+        </div>
+
+        <div id="game-over-screen" class="screen" style="display:none;">
+            <h2 id="final-message"></h2>
+            <p id="final-bounty"></p>
+            <button onclick="restartGame()">Play Again?</button>
+        </div>
+    </div>
+
+    <script>
+        let playerName = "";
+        let bounty = 0;
+        let difficulty = "";
+        let visitedIslands = new Set();
+        let currentIslandName = "";
+
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const difficultyScreen = document.getElementById('difficulty-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const challengeScreen = document.getElementById('challenge-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+
+        const captainNameSpan = document.getElementById('captain-name');
+        const bountyCounterSpan = document.getElementById('bounty-counter');
+        const difficultyLevelSpan = document.getElementById('difficulty-level');
+        const challengeTitle = document.getElementById('challenge-title');
+        const challengeDescription = document.getElementById('challenge-description');
+        const challengeContent = document.getElementById('challenge-content');
+        const finalMessage = document.getElementById('final-message');
+        const finalBounty = document.getElementById('final-bounty');
+        
+        const questionPool = {
+            simple: [
+                { island: "Alvida's Island", question: "What is the name of Luffy's crew?", answer: "Straw Hat Pirates", reward: 5000000 },
+                { island: "Loguetown", question: "Who is the first member Luffy recruits?", answer: "Zoro", reward: 10000000 },
+                { island: "Drum Island", question: "What is the name of the first doctor to join the crew?", answer: "Chopper", reward: 20000000 },
+                { island: "Alabasta", question: "What is the name of Vivi's kingdom?", answer: "Alabasta Kingdom", reward: 30000000 },
+                { island: "Skypiea", question: "What is the name of the 'god' of Skypiea?", answer: "Enel", reward: 50000000 }
+            ],
+            average: [
+                { island: "Alvida's Island", question: "What is Buggy the Clown's Devil Fruit?", answer: "Bara Bara no Mi", reward: 15000000 },
+                { island: "Loguetown", question: "Who is the Marine Captain that tries to execute Luffy?", answer: "Smoker", reward: 25000000 },
+                { island: "Drum Island", question: "What is the name of Dr. Kureha's medical technique?", answer: "Hiruluk's Cherry Blossoms", reward: 40000000 },
+                { island: "Alabasta", question: "What is the name of the organization Crocodile leads?", answer: "Baroque Works", reward: 60000000 },
+                { island: "Skypiea", question: "What are the four 'Ordeal' names?", answer: "Ball, Iron, String, Swamp", reward: 80000000 }
+            ],
+            hard: [
+                { island: "Alvida's Island", question: "Before Luffy, what was Koby's goal in life?", answer: "To join the Marines", reward: 30000000 },
+                { island: "Loguetown", question: "What is the name of the pirate that inspired Smoker to join the Marines?", answer: "Gol D. Roger", reward: 50000000 },
+                { island: "Drum Island", question: "What is the name of the castle on Drum Island?", answer: "Drum Castle", reward: 80000000 },
+                { island: "Alabasta", question: "What is the name of the dance that the Unluckies use to communicate?", answer: "Dance Powder", reward: 100000000 },
+                { island: "Skypiea", question: "Who is the 'God' of Skypiea before Enel?", answer: "Gedatsu", reward: 150000000 }
+            ]
+        };
+
+        const extraQuestions = [
+            { question: "What is the name of the shipwright who built the Thousand Sunny?", answer: "Franky", reward: 75000000 },
+            { question: "What is the name of the island where Ace was born?", answer: "Baterilla", reward: 120000000 },
+            { question: "Who is the captain of the Heart Pirates?", answer: "Trafalgar Law", reward: 90000000 },
+            { question: "What is the name of the World Government's ultimate weapon?", answer: "Pluton", reward: 150000000 }
+        ];
+        
+        let islandChallenges = {};
+        let visitedBountyQuestions = new Set();
+
+        function showDifficultyScreen() {
+            playerName = document.getElementById('playerName').value.trim() || "Monkey D. Luffy";
+            welcomeScreen.style.display = 'none';
+            difficultyScreen.style.display = 'flex';
+        }
+
+        function startGame(level) {
+            difficulty = level;
+            difficultyScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            captainNameSpan.textContent = playerName;
+            difficultyLevelSpan.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+            updateBounty();
+            
+            const availableQuestions = questionPool[difficulty];
+            availableQuestions.forEach(q => {
+                islandChallenges[q.island] = {
+                    type: 'trivia',
+                    question: q.question,
+                    answer: q.answer,
+                    reward: q.reward
+                };
+            });
+            islandChallenges["The Final Island"] = {
+                type: 'game-over',
+                description: "Congratulations! You have reached the final island and proven your worth. Let's see your final bounty!",
+                reward: 200000000
+            };
+            islandChallenges["Bounty Board"] = {
+                type: 'bounty',
+            };
+        }
+
+        function updateBounty() {
+            bountyCounterSpan.textContent = bounty.toLocaleString();
+        }
+
+        function visitIsland(islandName) {
+            currentIslandName = islandName;
+            
+            const markerId = currentIslandName.toLowerCase().replace(/'/g, '').replace(/ /g, '');
+            const marker = document.getElementById(markerId);
+
+            if (marker.classList.contains('visited')) {
+                showModal('You have already completed this challenge!', 'Already Visited', 'incorrect');
+                return;
+            }
+            
+            gameScreen.style.display = 'none';
+            challengeScreen.style.display = 'flex';
+            
+            const challenge = islandChallenges[islandName];
+            challengeTitle.textContent = islandName + " Challenge!";
+            
+            if (challenge.type === 'trivia') {
+                showTriviaChallenge(challenge);
+            } else if (challenge.type === 'bounty') {
+                showBountyChallenge();
+            } else if (challenge.type === 'game-over') {
+                endGame(challenge);
+            }
+        }
+
+        function showTriviaChallenge(challenge) {
+            challengeDescription.textContent = challenge.question;
+            challengeContent.innerHTML = `
+                <input type="text" id="trivia-answer" placeholder="Your Answer">
+                <button onclick="checkAnswer('${challenge.answer}', ${challenge.reward}, 'island')">Submit</button>
+            `;
+            document.getElementById('trivia-answer').focus();
+        }
+
+        function showBountyChallenge() {
+            let availableQuestions = extraQuestions.filter(q => !visitedBountyQuestions.has(q.question));
+            if (availableQuestions.length === 0) {
+                showModal('All bounties have been claimed!', 'No More Bounties', 'incorrect');
+                backToMap();
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            const randomQuestion = availableQuestions[randomIndex];
+            
+            challengeTitle.textContent = "Bounty Hunter Challenge!";
+            challengeDescription.textContent = randomQuestion.question;
+            challengeContent.innerHTML = `
+                <p>Reward: ${randomQuestion.reward.toLocaleString()} Berries</p>
+                <input type="text" id="trivia-answer" placeholder="Your Answer">
+                <button onclick="checkAnswer('${randomQuestion.answer}', ${randomQuestion.reward}, 'bounty', '${randomQuestion.question}')">Submit</button>
+            `;
+            document.getElementById('trivia-answer').focus();
+        }
+
+        function checkAnswer(correctAnswer, reward, type, questionText = '') {
+            const userAnswer = document.getElementById('trivia-answer').value.trim();
+
+            if (!userAnswer) {
+                showModal('Please enter an answer, pirate!', 'No Answer', 'incorrect');
+                return;
+            }
+
+            const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+
+            if (isCorrect) {
+                bounty += reward;
+                showModal(`Correct! You've earned ${reward.toLocaleString()} Berries!`, 'Victory!', 'correct');
+                if (type === 'island') {
+                    visitedIslands.add(currentIslandName);
+                } else if (type === 'bounty') {
+                    visitedBountyQuestions.add(questionText);
+                }
+                setTimeout(backToMap, 2000);
+            } else {
+                showModal(`Incorrect! The correct answer was: <b>${correctAnswer}</b>.`, 'Defeat!', 'incorrect');
+                setTimeout(backToMap, 3000);
+            }
+        }
+
+        function showModal(message, title, type) {
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'modal-overlay';
+            document.body.appendChild(modalOverlay);
+
+            const modal = document.createElement('div');
+            modal.className = `modal ${type}-modal`;
+            modal.innerHTML = `<h3>${title}</h3><p>${message}</p>`;
+            document.body.appendChild(modal);
+
+            modalOverlay.onclick = () => {
+                modal.remove();
+                modalOverlay.remove();
+            };
+        }
+        
+        function endGame(challenge) {
+            if (visitedIslands.size < 5) {
+                finalMessage.textContent = `You haven't visited all the islands, Captain ${playerName}!`;
+                finalBounty.textContent = `Your final bounty is: ${bounty.toLocaleString()} Berries!`;
+            } else {
+                bounty += challenge.reward;
+                finalMessage.textContent = `Captain ${playerName}, you have become the Pirate King!`;
+                finalBounty.textContent = `Your final bounty is: ${bounty.toLocaleString()} Berries!`;
+            }
+            
+            challengeScreen.style.display = 'none';
+            gameOverScreen.style.display = 'flex';
+        }
+
+        function backToMap() {
+            challengeScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            updateBounty();
+            
+            const markerId = currentIslandName.toLowerCase().replace(/'/g, '').replace(/ /g, '');
+            const marker = document.getElementById(markerId);
+            if(marker && visitedIslands.has(currentIslandName)) {
+                marker.classList.add('visited');
+            }
+            
+            // Remove any existing modals
+            const existingModal = document.querySelector('.modal');
+            if(existingModal) existingModal.remove();
+            const existingOverlay = document.querySelector('.modal-overlay');
+            if(existingOverlay) existingOverlay.remove();
+        }
+
+        function restartGame() {
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Nakama!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            background: #0d1a2b;
+            position: relative;
+        }
+
+        .starry-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            animation: moveStars 150s linear infinite;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 110px 100px, #fff, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            animation: animateStarryBackground 100s linear infinite;
+        }
+
+        @keyframes moveStars {
+            from { background-position: 0 0; }
+            to { background-position: -10000px 5000px; }
+        }
+
+        @keyframes animateStarryBackground {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10000px); }
+        }
+
+        .friendship-symbol {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            opacity: 0;
+            animation: showAndFade 10s ease-in-out infinite;
+        }
+        
+        .friendship-symbol:before, .friendship-symbol:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            border: 3px solid #ffcc00;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: rotateSymbol 10s linear infinite;
+        }
+        .friendship-symbol:after {
+            width: 50px;
+            height: 50px;
+            animation: rotateSymbol 10s linear infinite reverse;
+        }
+
+        @keyframes showAndFade {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1); }
+        }
+        @keyframes rotateSymbol {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 5em;
+            color: #ffcc00;
+            text-shadow: 4px 4px 0px #e60000, 6px 6px 0px #000;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+
+        .sub-heading {
+            font-size: 1.5em;
+            color: #f0f0f0;
+            text-shadow: 2px 2px 2px #000;
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            overflow: hidden;
+            border: 5px solid #ffcc00;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            perspective: 1000px;
+            opacity: 0;
+            transform: rotateX(90deg) scale(0.8);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .gallery-item.visible {
+            opacity: 1;
+            transform: rotateX(0deg) scale(1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+
+        .birthday-note {
+            margin-top: 80px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid #ffcc00;
+            text-align: left;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .note-author {
+            margin-top: 20px;
+            text-align: right;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .quote-container {
+            margin-top: 100px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .quote-text {
+            font-size: 1.5em;
+            font-style: italic;
+            color: #fff;
+            text-shadow: 0 0 5px #00aaff, 0 0 10px #00aaff, 0 0 20px #00aaff, 0 0 40px #00aaff;
+            animation: glowing 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowing {
+            from {
+                text-shadow: 0 0 5px #00aaff, 0 0 10px #00aaff, 0 0 15px #00aaff;
+            }
+            to {
+                text-shadow: 0 0 10px #00aaff, 0 0 20px #00aaff, 0 0 30px #00aaff, 0 0 40px #00aaff;
+            }
+        }
+        
+        .game-button-container {
+            margin-top: 50px;
+            text-align: center;
+            padding-bottom: 50px;
+        }
+
+        .game-button {
+            padding: 15px 30px;
+            font-family: 'Bangers', cursive;
+            font-size: 1.5em;
+            color: #fff;
+            background-color: #e60000;
+            border: 4px solid #ffcc00;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-button:hover {
+            background-color: #ff3333;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="starry-background">
+        <div class="stars"></div>
+    </div>
+    
+    <div class="friendship-symbol"></div>
+
+    <div class="container">
+        <h1>Happy Birthday, Captain!</h1>
+        <p class="sub-heading">A treasure map of memories for our dearest nakama. Just like Luffy, your journey is full of amazing adventures!</p>
+
+        <div class="gallery">
+            <div class="gallery-item"><img src="jp1.jpg" alt="Birthday Photo 1"></div>
+            <div class="gallery-item"><img src="jp2.jpg" alt="Birthday Photo 2"></div>
+            <div class="gallery-item"><img src="jp3.jpg" alt="Birthday Photo 3"></div>
+            <div class="gallery-item"><img src="jp4.jpg" alt="Birthday Photo 4"></div>
+            <div class="gallery-item"><img src="jp5.jpg" alt="Birthday Photo 5"></div>
+            <div class="gallery-item"><img src="jp6.jpg" alt="Birthday Photo 6"></div>
+            <div class="gallery-item"><img src="jp7.jpg" alt="Birthday Photo 7"></div>
+            <div class="gallery-item"><img src="jp8.jpg" alt="Birthday Photo 8"></div>
+            <div class="gallery-item"><img src="jp9.jpg" alt="Birthday Photo 9"></div>
+            <div class="gallery-item"><img src="jp10.jpg" alt="Birthday Photo 10"></div>
+        </div>
+
+        <div class="birthday-note">
+            <p>Happy birthday, my dearest friend! Thank you for being such an incredible part of my life. Your support, laughter, and friendship mean the world to me. Here’s to many more years of amazing memories together. May our bond stay strong, no matter what adventure life throws our way!</p>
+            <p class="note-author">- Ekanth Yadav</p>
+        </div>
+
+        <div class="quote-container">
+            <p id="quote" class="quote-text"></p>
+        </div>
+        
+        <div class="game-button-container">
+            <a href="game.html" class="game-button">Play a Game!</a>
+        </div>
+    </div>
+
+    <script>
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.2
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        galleryItems.forEach(item => {
+            observer.observe(item);
+        });
+
+        const quotes = [
+            "A friend is one who overlooks your broken fence and admires the flowers in your garden.",
+            "Friendship is born at that moment when one person says to another, 'What! You too? I thought I was the only one.'",
+            "A true friend is someone who is there for you when they would rather be somewhere else.",
+            "The greatest gift of life is friendship, and I have received it.",
+            "Many people will walk in and out of your life, but only true friends will leave footprints in your heart.",
+            "Friendship isn't about who you've known the longest. It's about who walked into your life, said 'I'm here for you,' and proved it."
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteElement = document.getElementById('quote');
+
+        function displayNextQuote() {
+            quoteElement.style.opacity = 0;
+            setTimeout(() => {
+                quoteElement.textContent = quotes[currentQuoteIndex];
+                quoteElement.style.opacity = 1;
+                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+            }, 500); 
+        }
+
+        displayNextQuote();
+        setInterval(displayNextQuote, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ekanth's Surprise for JP – A Heartfelt Birthday Tribute</title>
+  <meta name="description" content="Discover the special surprise curated by Ekanth for JP – a blend of memories, celebration, and friendship.">
+  <meta name="keywords" content="Ekanth, JP, birthday surprise, JP Yadav tribute, friendship, celebration">
+  <meta name="robots" content="index, follow">
+  <style>
+    :root {
+      --glow-color: #ff1a1a;
+      --fill-degrees: 0deg;
+      --bg-color: #0b0c0f;
+      --accent-color-off: #a0a0a0;
+      --accent-color-on: #00ff00;
+      --hold-progress: 0;
+      --glitch-offset-1: 0px;
+      --glitch-offset-2: 0px;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: var(--bg-color);
+      background-image:
+          radial-gradient(circle at 50% 50%, rgba(25, 30, 40, 0.4) 0, rgba(25, 30, 40, 0.9) 100%),
+          linear-gradient(rgba(20, 20, 20, 0.8) 1px, transparent 1px);
+      background-size: 100% 100%, 2px 2px;
+      background-position: 0 0, 0 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: white;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ⚡ Cinematic Screen Effects */
+    body.power-surge {
+        animation: power-surge-effect 0.3s ease-out;
+    }
+    @keyframes power-surge-effect {
+        0% { filter: brightness(1) contrast(1); }
+        50% { filter: brightness(2) contrast(1.5); }
+        100% { filter: brightness(1) contrast(1); }
+    }
+    body.glitching {
+        animation: glitch-effect 0.2s linear infinite;
+    }
+    @keyframes glitch-effect {
+        0% { transform: translate(var(--glitch-offset-1), var(--glitch-offset-2)); }
+        25% { transform: translate(var(--glitch-offset-2), var(--glitch-offset-1)); }
+        50% { transform: translate(var(--glitch-offset-1), var(--glitch-offset-2)); }
+        75% { transform: translate(var(--glitch-offset-2), var(--glitch-offset-1)); }
+        100% { transform: translate(var(--glitch-offset-1), var(--glitch-offset-2)); }
+    }
+    
+    .status-bar {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 14px;
+        color: var(--accent-color-off);
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        opacity: 0.8;
+        transition: color 0.5s, opacity 0.5s;
+        animation: none;
+    }
+    .status-bar.online {
+        color: var(--accent-color-on);
+        animation: blinking-status 1s infinite step-end;
+    }
+    @keyframes blinking-status {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .button-container {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      transform-style: preserve-3d;
+      transform: rotateX(20deg) rotateY(-10deg);
+      transition: transform 0.5s ease;
+    }
+
+    /* ⚡ Outer animated ring (now more vibrant) */
+    .button-container::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        animation: none;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    .glow-button.holding .button-container::before {
+        opacity: calc(var(--hold-progress) * 1.5);
+        border: 2px solid var(--glow-color);
+        animation: rotate-border 2s linear infinite,
+                   glow-pulse 1s ease-in-out infinite alternate;
+    }
+    @keyframes rotate-border {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    @keyframes glow-pulse {
+        0%, 100% { box-shadow: 0 0 10px var(--glow-color); }
+        50% { box-shadow: 0 0 20px var(--glow-color); }
+    }
+
+    /* ⚡ Button Body with advanced glow */
+    .glow-button {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(to bottom, #151515, #0a0a0a);
+      box-shadow:
+        0 0 10px rgba(255,255,255,0.2), /* Base glow for off state */
+        inset 0 0 10px rgba(0,0,0,0.5);
+      color: white;
+      cursor: pointer;
+      overflow: hidden;
+      z-index: 2;
+      transition: all 0.2s ease-out, transform 0.1s ease-out;
+      transform: translateZ(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .glow-button.holding {
+        box-shadow:
+            0 0 10px var(--glow-color),
+            0 0 20px var(--glow-color),
+            inset 0 0 10px var(--glow-color),
+            inset 0 0 20px var(--glow-color);
+    }
+    .glow-button:active {
+        transform: scale(0.98) translateZ(5px);
+    }
+    
+    /* ⚡ The core of the new effect: inner progress ring */
+    .inner-progress {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #111 60%, transparent 61%),
+                  conic-gradient(from 0deg, var(--glow-color) var(--fill-degrees), transparent var(--fill-degrees));
+      z-index: 1;
+      pointer-events: none;
+      filter:
+        drop-shadow(0 0 8px var(--glow-color))
+        drop-shadow(0 0 12px var(--glow-color))
+        drop-shadow(0 0 20px var(--glow-color));
+      transition: all 0.2s linear;
+    }
+
+    /* ⚡ Animated Particles inside the button */
+    .inner-progress::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: radial-gradient(circle at center, var(--glow-color) 0%, transparent 70%);
+        opacity: 0;
+        animation: none;
+        transition: opacity 0.3s;
+        z-index: 2;
+        pointer-events: none;
+    }
+    .glow-button.holding .inner-progress::before {
+        opacity: calc(0.3 + var(--hold-progress));
+        animation: inner-particle-glow 0.5s infinite alternate;
+        filter: blur(calc(10px * (1 - var(--hold-progress))));
+    }
+    @keyframes inner-particle-glow {
+        from { transform: scale(0.5); opacity: 0.3; }
+        to { transform: scale(1); opacity: 0.8; }
+    }
+
+    .button-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      text-align: center;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .glow-button.holding .button-label {
+        color: var(--glow-color);
+        text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    .percentage {
+      font-size: 14px;
+      color: var(--glow-color);
+      margin-top: 4px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .glow-button.holding .percentage {
+        opacity: 1;
+    }
+
+    .subtitle {
+      margin-top: 20px;
+      color: #999;
+      font-size: 16px;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    .glow-button.holding + .subtitle {
+        opacity: 0.3;
+    }
+
+    #scene1 {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s;
+    }
+
+    #scene0 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    
+    .control-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 30px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .plug-btn {
+      padding: 16px 32px;
+      font-size: 18px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #333;
+      color: var(--accent-color-off);
+      box-shadow: inset 0 -3px 0 #111, 0 3px 0 #222;
+      transition: all 0.1s ease;
+    }
+    .plug-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: inset 0 -3px 0 #111, 0 5px 0 #222;
+    }
+    .plug-btn:active:not(:disabled) {
+        transform: translateY(1px);
+        box-shadow: inset 0 -1px 0 #111, 0 1px 0 #222;
+    }
+    .plug-btn:disabled {
+      background-color: #1a1a1a;
+      color: #555;
+      box-shadow: inset 0 -2px 0 #000;
+      cursor: default;
+    }
+
+    .power-toggle-container {
+        position: relative;
+        width: 100%;
+        height: 40px;
+        background: #111;
+        border-radius: 20px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8), 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+    .power-toggle {
+        position: absolute;
+        left: 5px;
+        top: 5px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--accent-color-off);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        box-shadow: 0 0 10px var(--accent-color-off);
+    }
+    .power-toggle.active {
+        left: calc(100% - 35px);
+        background: var(--accent-color-on);
+        box-shadow: 0 0 15px var(--accent-color-on);
+    }
+
+    #trailCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+    <canvas id="trailCanvas"></canvas>
+
+  <div id="scene0">
+    <div class="control-panel">
+        <button id="plugBtn" class="plug-btn">🔌 Plug In</button>
+        <div class="power-toggle-container" style="display:none;">
+            <div id="powerSwitch" class="power-toggle"></div>
+        </div>
+    </div>
+  </div>
+
+  <div id="scene1">
+    <div class="button-container">
+      <div class="glow-button" id="turnOnBtn">
+        <div class="inner-progress" id="progressRing"></div>
+        <div class="button-label">
+          <div>HOLD</div>
+          <div class="percentage" id="percentText">0%</div>
+        </div>
+      </div>
+    </div>
+    <div class="subtitle">to start sequence</div>
+  </div>
+
+  <div id="status-bar" class="status-bar">STATUS: OFFLINE</div>
+
+  <script>
+    const btn = document.getElementById('turnOnBtn');
+    const ring = document.getElementById('progressRing');
+    const percentText = document.getElementById('percentText');
+    const scene0 = document.getElementById('scene0');
+    const scene1 = document.getElementById('scene1');
+    const plugBtn = document.getElementById('plugBtn');
+    const powerSwitch = document.getElementById('powerSwitch');
+    const powerToggleContainer = document.querySelector('.power-toggle-container');
+    const statusBar = document.getElementById('status-bar');
+    const body = document.body;
+
+    let holdStart = null;
+    let animationFrame = null;
+    const holdTime = 6000;
+
+    function updateProgress(timestamp) {
+      if (!holdStart) holdStart = timestamp;
+      const elapsed = timestamp - holdStart;
+      const progress = Math.min(elapsed / holdTime, 1);
+      const degrees = progress * 360;
+      const percent = Math.floor(progress * 100);
+
+      document.documentElement.style.setProperty('--fill-degrees', `${degrees}deg`);
+      document.documentElement.style.setProperty('--hold-progress', progress);
+      percentText.textContent = `${percent}%`;
+
+      // ⚡ Dynamic Glow Color
+      const hue = progress * 120; // Example: Red (0) to Yellow (60) to Green (120)
+      const glowColor = `hsl(${hue}, 100%, 50%)`;
+      document.documentElement.style.setProperty('--glow-color', glowColor);
+
+      // ⚡ Glitch Effect at High Progress
+      if (percent >= 80) {
+        const offset1 = `${Math.random() * 5}px`;
+        const offset2 = `${Math.random() * 5}px`;
+        document.documentElement.style.setProperty('--glitch-offset-1', offset1);
+        document.documentElement.style.setProperty('--glitch-offset-2', offset2);
+        body.classList.add('glitching');
+      } else {
+        body.classList.remove('glitching');
+      }
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(updateProgress);
+      } else {
+        triggerAction();
+      }
+    }
+
+    function resetProgress() {
+      cancelAnimationFrame(animationFrame);
+      btn.classList.remove("holding");
+      body.classList.remove('glitching');
+      document.documentElement.style.setProperty('--fill-degrees', `0deg`);
+      document.documentElement.style.setProperty('--hold-progress', 0);
+      document.documentElement.style.setProperty('--glow-color', '#ff1a1a'); // Reset glow color
+      percentText.textContent = '0%';
+      holdStart = null;
+    }
+
+    function triggerAction() {
+      resetProgress();
+      window.location.href = 'index1.html';
+    }
+
+    const startHold = (e) => {
+      e.preventDefault();
+      if (!holdStart) {
+        btn.classList.add("holding");
+        animationFrame = requestAnimationFrame(updateProgress);
+      }
+    };
+
+    const cancelHold = () => {
+      resetProgress();
+    };
+
+    btn.addEventListener('mousedown', startHold);
+    btn.addEventListener('touchstart', startHold);
+    btn.addEventListener('mouseup', cancelHold);
+    btn.addEventListener('mouseleave', cancelHold);
+    btn.addEventListener('touchend', cancelHold);
+    btn.addEventListener('touchcancel', cancelHold);
+
+    // ✅ Plug + Power Switch Logic
+    plugBtn.addEventListener('click', () => {
+      plugBtn.disabled = true;
+      plugBtn.textContent = "🔌 Plugged In";
+      statusBar.textContent = 'STATUS: CONNECTING...';
+
+      setTimeout(() => {
+        powerToggleContainer.style.display = "block";
+        statusBar.textContent = 'STATUS: AWAITING POWER...';
+      }, 1000);
+    });
+
+    powerSwitch.addEventListener('click', () => {
+      if (powerSwitch.classList.contains('active')) return;
+      powerSwitch.classList.add('active');
+      document.body.classList.add('power-surge');
+      statusBar.textContent = 'STATUS: INITIALIZING...';
+
+      setTimeout(() => {
+        document.body.classList.remove('power-surge');
+        statusBar.textContent = 'STATUS: ONLINE';
+        statusBar.classList.add('online');
+        scene0.style.display = 'none';
+        scene1.style.display = 'flex';
+      }, 1000);
+    });
+
+    // Cursor Trail JavaScript (Corrected and complete)
+    var trailCtx;
+    var f;
+    var pos = { x: 0, y: 0 };
+    var trailLines = [];
+    var E = {
+        debug: true,
+        friction: 0.5,
+        trails: 20,
+        size: 50,
+        dampening: 0.25,
+        tension: 0.98,
+    };
+    function SineWaveValue(e) {
+        this.init(e || {});
+    }
+    SineWaveValue.prototype = {
+        init: function (e) {
+            this.phase = e.phase || 0;
+            this.offset = e.offset || 0;
+            this.frequency = e.frequency || 0.001;
+            this.amplitude = e.amplitude || 1;
+        },
+        update: function () {
+            this.phase += this.frequency;
+            return this.offset + Math.sin(this.phase) * this.amplitude;
+        },
+        value: function () {
+            return this.offset + Math.sin(this.phase) * this.amplitude;
+        },
+    };
+    function Node() {
+        this.x = 0;
+        this.y = 0;
+        this.vx = 0;
+        this.vy = 0;
+    }
+    function Line(e) {
+        this.init(e || {});
+    }
+    Line.prototype = {
+        init: function (e) {
+            this.spring = e.spring + 0.1 * Math.random() - 0.02;
+            this.friction = E.friction + 0.01 * Math.random() - 0.002;
+            this.nodes = [];
+            for (var n = 0; n < E.size; n++) {
+                var t = new Node();
+                t.x = pos.x;
+                t.y = pos.y;
+                this.nodes.push(t);
+            }
+        },
+        update: function () {
+            var e = this.spring, t = this.nodes[0];
+            t.vx += (pos.x - t.x) * e;
+            t.vy += (pos.y - t.y) * e;
+            for (var n, i = 0, a = this.nodes.length; i < a; i++) {
+                t = this.nodes[i];
+                if (i > 0) {
+                    n = this.nodes[i - 1];
+                    t.vx += (n.x - t.x) * e;
+                    t.vy += (n.y - t.y) * e;
+                    t.vx += n.vx * E.dampening;
+                    t.vy += n.vy * E.dampening;
+                }
+                t.vx *= this.friction;
+                t.vy *= this.friction;
+                t.x += t.vx;
+                t.y += t.vy;
+                e *= E.tension;
+            }
+        },
+        draw: function () {
+            var e, t, n = this.nodes[0].x, i = this.nodes[0].y;
+            trailCtx.beginPath();
+            trailCtx.moveTo(n, i);
+            for (var a = 1, o = this.nodes.length - 2; a < o; a++) {
+                e = this.nodes[a];
+                t = this.nodes[a + 1];
+                n = 0.5 * (e.x + t.x);
+                i = 0.5 * (e.y + t.y);
+                trailCtx.quadraticCurveTo(e.x, e.y, n, i);
+            }
+            e = this.nodes[a];
+            t = this.nodes[a + 1];
+            trailCtx.quadraticCurveTo(e.x, e.y, t.x, t.y);
+            trailCtx.stroke();
+            trailCtx.closePath();
+        },
+    };
+    function updatePos(e) {
+        if (e.touches) {
+            pos.x = e.touches[0].pageX;
+            pos.y = e.touches[0].pageY;
+        } else {
+            pos.x = e.clientX;
+            pos.y = e.clientY;
+        }
+    }
+    function setupLines() {
+        trailLines = [];
+        for (var i = 0; i < E.trails; i++) {
+            trailLines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+        }
+    }
+    function render() {
+        if (trailCtx.running) {
+            trailCtx.globalCompositeOperation = 'source-over';
+            trailCtx.clearRect(0, 0, trailCtx.canvas.width, trailCtx.canvas.height);
+            trailCtx.globalCompositeOperation = 'lighter';
+            trailCtx.strokeStyle = 'hsla(' + Math.round(f.update()) + ',50%,20%,0.8)';
+            trailCtx.lineWidth = 3;
+            for (var i = 0; i < E.trails; i++) {
+                trailLines[i].update();
+                trailLines[i].draw();
+            }
+            trailCtx.frame++;
+            window.requestAnimationFrame(render);
+        }
+    }
+    function resizeTrailCanvas() {
+        const canvas = document.getElementById('trailCanvas');
+        if (canvas) {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+    }
+    function initCursorTrail() {
+        const canvas = document.getElementById('trailCanvas');
+        if (!canvas) {
+          console.error('Trail canvas not found!');
+          return;
+        }
+        trailCtx = canvas.getContext('2d');
+        trailCtx.running = true;
+        trailCtx.frame = 1;
+        f = new SineWaveValue({
+            phase: Math.random() * 2 * Math.PI,
+            amplitude: 85,
+            frequency: 0.0015,
+            offset: 285,
+        });
+        document.addEventListener('mousemove', updatePos);
+        document.addEventListener('touchmove', updatePos, { passive: false });
+        document.addEventListener('touchstart', updatePos, { passive: false });
+        window.addEventListener('resize', resizeTrailCanvas);
+        window.addEventListener('focus', () => {
+            if (!trailCtx.running) {
+                trailCtx.running = true;
+                render();
+            }
+        });
+        window.addEventListener('blur', () => {
+            trailCtx.running = false;
+        });
+        resizeTrailCanvas();
+        setupLines();
+        render();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCursorTrail(); 
+    });
+  </script>
+</body>
+</html>
