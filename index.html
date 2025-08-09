@@ -7,6 +7,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
+        /* Existing styles */
         body {
             margin: 0;
             overflow: hidden;
@@ -157,9 +158,79 @@
                 font-size: 18px;
             }
         }
+        
+        /* --- Cursor Effect Styles --- */
+        :root {
+            --black: #252423;
+            --white: #F6F4F2;
+            --white-2: #FFF;
+            --grey: #b8b6b3;
+            --red: #FF4B4B;
+            --orange: #FF8F42;
+            --lightorange: #FFC730;
+            --yellow: #F6FF56;
+            --citrus: #A4FF4F;
+            --green: #18FF74;
+            --darkgreen: #00D672;
+            --turquoise: #3CFFEC;
+            --skyblue: #61C3FF;
+            --kingblue: #5A87FF;
+            --lavender: #8453E3;
+            --purple: #C26EFF;
+            --pink: #FB89FB;
+            --input-border-radius: .25rem;
+        }
+        
+        *, *:before, *:after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font: inherit;
+            vertical-align: baseline;
+        }
+        
+        #creature-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* This is the key change to keep it in the background */
+        }
+        
+        #creature {
+            font-size: .2vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150em;
+            height: 150em;
+            flex-wrap: wrap;
+        }
+        
+        #creature div {
+            transform-style: preserve-3d;
+            position: relative;
+            width: 4em;
+            height: 4em;
+            margin: 3em;
+            border-radius: 2em;
+            will-change: transform;
+            mix-blend-mode: plus-lighter;
+            background: var(--red);
+        }
     </style>
 </head>
 <body>
+
+    <div id="creature-wrapper">
+        <div id="creature"></div>
+    </div>
 
     <div class="grid-bg"></div>
 
@@ -185,6 +256,18 @@
             document.getElementById('portalContainer').style.display = 'none';
             document.getElementById('portalContent').style.display = 'none';
             
+            // Hide the creature effect
+            const creatureWrapper = document.getElementById('creature-wrapper');
+            if (creatureWrapper) {
+                creatureWrapper.style.display = 'none';
+            }
+            
+            // Remove the cursor effect script to free up resources
+            const cursorScript = document.getElementById('cursor-script');
+            if (cursorScript) {
+                cursorScript.remove();
+            }
+            
             // Show the new verification overlay
             const overlay = document.getElementById('verificationOverlay');
             overlay.style.display = 'flex';
@@ -198,24 +281,27 @@
 
             function Thunder(options) {
                 options = options || {};
-                this.lifespan = options.lifespan || Math.round(Math.random() * 10 + 10);
+                // Reduced lifespan and max segments for better performance
+                this.lifespan = options.lifespan || Math.round(Math.random() * 5 + 5); 
                 this.maxlife = this.lifespan;
                 this.color = options.color || '#fefefe';
                 this.glow = options.glow || '#2323fe';
                 this.x = options.x || Math.random() * w;
                 this.y = options.y || Math.random() * h;
-                this.width = options.width || 2;
+                this.width = options.width || 1; // Smaller line width
                 this.direct = options.direct || Math.random() * Math.PI * 2;
-                this.max = options.max || Math.round(Math.random() * 10 + 20);
+                this.max = options.max || Math.round(Math.random() * 10 + 10); // Reduced segments
                 this.segments = [...new Array(this.max)].map(() => {
                     return {
                         direct: this.direct + (Math.PI * Math.random() * 0.2 - 0.1),
-                        length: Math.random() * 20 + 80,
+                        length: Math.random() * 10 + 40, // Shorter length
                         change: Math.random() * 0.04 - 0.02
                     };
                 });
                 this.update = function (index, array) {
-                    this.segments.forEach(s => {(s.direct += s.change) && Math.random() > 0.96 && (s.change *= -1);});
+                    this.segments.forEach(s => {
+                        (s.direct += s.change) && Math.random() > 0.96 && (s.change *= -1);
+                    });
                     this.lifespan > 0 && this.lifespan-- || this.remove(index, array);
                 };
                 this.render = function (ctx) {
@@ -224,7 +310,7 @@
                     ctx.globalAlpha = this.lifespan / this.maxlife;
                     ctx.strokeStyle = this.color;
                     ctx.lineWidth = this.width;
-                    ctx.shadowBlur = 32;
+                    ctx.shadowBlur = 16; // Reduced shadow blur
                     ctx.shadowColor = this.glow;
                     ctx.moveTo(this.x, this.y);
                     let prev = { x: this.x, y: this.y };
@@ -237,7 +323,7 @@
                     ctx.stroke();
                     ctx.closePath();
                     ctx.shadowBlur = 0;
-                    const strength = Math.random() * 80 + 40;
+                    const strength = Math.random() * 40 + 20; // Reduced strength
                     const light = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, strength);
                     light.addColorStop(0, 'rgba(250, 200, 50, 0.6)');
                     light.addColorStop(0.1, 'rgba(250, 200, 50, 0.2)');
@@ -257,11 +343,11 @@
                 options = options || {};
                 this.x = options.x || w * 0.5;
                 this.y = options.y || h * 0.5;
-                this.v = options.v || { direct: Math.random() * Math.PI * 2, weight: Math.random() * 14 + 2, friction: 0.88 };
+                this.v = options.v || { direct: Math.random() * Math.PI * 2, weight: Math.random() * 8 + 1, friction: 0.88 }; // Reduced weight
                 this.a = options.a || { change: Math.random() * 0.4 - 0.2, min: this.v.direct - Math.PI * 0.4, max: this.v.direct + Math.PI * 0.4 };
-                this.g = options.g || { direct: Math.PI * 0.5 + (Math.random() * 0.4 - 0.2), weight: Math.random() * 0.25 + 0.25 };
-                this.width = options.width || Math.random() * 3;
-                this.lifespan = options.lifespan || Math.round(Math.random() * 20 + 40);
+                this.g = options.g || { direct: Math.PI * 0.5 + (Math.random() * 0.4 - 0.2), weight: Math.random() * 0.15 + 0.15 }; // Reduced gravity
+                this.width = options.width || Math.random() * 2;
+                this.lifespan = options.lifespan || Math.round(Math.random() * 10 + 20); // Reduced lifespan
                 this.maxlife = this.lifespan;
                 this.color = options.color || '#feca32';
                 this.prev = { x: this.x, y: this.y };
@@ -293,7 +379,7 @@
 
             function Particles(options) {
                 options = options || {};
-                this.max = options.max || Math.round(Math.random() * 10 + 10);
+                this.max = options.max || Math.round(Math.random() * 5 + 5); // Reduced number of sparks
                 this.sparks = [...new Array(this.max)].map(() => new Spark(options));
                 this.update = function () { this.sparks.forEach((s, i) => s.update(i, this.sparks)); };
                 this.render = function (ctx) { this.sparks.forEach(s => s.render(ctx)); };
@@ -302,48 +388,51 @@
             let animationComplete = false;
             let completionTimeout;
             let currentLineIndex = 0;
+            let currentTextProgress = 0;
 
             function Text(options) {
                 options = options || {};
                 const pool = document.createElement('canvas');
                 const buffer = pool.getContext('2d');
-                pool.width = w;
-                pool.height = h;
-                buffer.fillStyle = '#000000';
-                buffer.fillRect(0, 0, pool.width, pool.height);
                 this.size = options.size || 80;
                 this.copy = options.copy || `INITIATING`;
                 this.color = options.color || '#cd96fe';
                 buffer.font = `bold ${this.size}px Orbitron`;
                 this.bound = buffer.measureText(this.copy);
                 this.bound.height = this.size * 1.5;
-                this.x = options.x || w * 0.5 - this.bound.width * 0.5;
-                this.y = options.y || h * 0.5 - this.size * 0.5;
+                pool.width = this.bound.width;
+                pool.height = this.bound.height;
+                buffer.font = `bold ${this.size}px Orbitron`;
                 buffer.strokeStyle = this.color;
                 buffer.strokeText(this.copy, 0, this.bound.height * 0.8);
                 this.data = buffer.getImageData(0, 0, this.bound.width, this.bound.height);
-                this.index = 0;
-                this.update = function () {
-                    for (let i = 0; i < 5; i++) {
-                        if (this.index >= this.bound.width) {
-                            return true;
+                this.x = options.x || w * 0.5 - this.bound.width * 0.5;
+                this.y = options.y || h * 0.5 - this.size * 0.5;
+
+                this.update = function() {
+                    let done = false;
+                    for (let j = 0; j < 5; j++) { // Process 5 columns at a time for efficiency
+                        if (currentTextProgress >= this.bound.width) {
+                            done = true;
+                            break;
                         }
-                        const data = this.data.data;
-                        for (let i = this.index * 4; i < data.length; i += 4 * this.data.width) {
-                            const bitmap = data[i] + data[i + 1] + data[i + 2] + data[i + 3];
-                            if (bitmap > 255 && Math.random() > 0.96) {
-                                const x = this.x + this.index;
-                                const y = this.y + i / this.bound.width / 4;
+                        for (let i = 0; i < this.bound.height; i++) {
+                            const pixelIndex = (i * this.bound.width + currentTextProgress) * 4;
+                            const alpha = this.data.data[pixelIndex + 3];
+                            if (alpha > 0 && Math.random() > 0.98) { // Reduced spawn chance
+                                const x = this.x + currentTextProgress;
+                                const y = this.y + i;
                                 thunder.push(new Thunder({ x: x, y: y }));
-                                Math.random() > 0.7 && particles.push(new Particles({ x: x, y: y }));
+                                Math.random() > 0.8 && particles.push(new Particles({ x: x, y: y }));
                             }
                         }
-                        this.index++;
+                        currentTextProgress++;
                     }
-                    return false;
+                    return done;
                 };
+
                 this.render = function (ctx) {
-                    ctx.putImageData(this.data, this.x, this.y, 0, 0, this.index, this.bound.height);
+                    ctx.putImageData(this.data, this.x, this.y, 0, 0, currentTextProgress, this.bound.height);
                 };
             }
 
@@ -360,12 +449,13 @@
                     const lineComplete = textLines[currentLineIndex].update();
                     if (lineComplete) {
                         currentLineIndex++;
+                        currentTextProgress = 0;
                     }
                 } else {
                     if (!animationComplete) {
                         animationComplete = true;
                         completionTimeout = setTimeout(() => {
-                            window.location.href = 'login.html';
+                            window.location.href = 'base.html';
                         }, 500); 
                     }
                 }
@@ -407,27 +497,17 @@
                 const text1 = 'INITIATING';
                 const text2 = 'VERIFICATION';
 
-                // Create a temporary canvas to measure the text widths
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.font = `bold ${size}px Orbitron`;
-                const text1Width = tempCtx.measureText(text1).width;
-                const text2Width = tempCtx.measureText(text2).width;
-
-                const totalHeight = lineHeight * 2;
-                const startY = (h - totalHeight) / 2;
-
                 const textLine1 = new Text({ 
                     copy: text1, 
                     size: size, 
-                    y: startY, 
-                    x: (w - text1Width) / 2 
+                    y: (h - (lineHeight * 2)) / 2, 
+                    x: (w - (size * text1.length / 2)) / 2 // Simple width estimate
                 });
                 const textLine2 = new Text({ 
                     copy: text2, 
                     size: size, 
-                    y: startY + lineHeight,
-                    x: (w - text2Width) / 2
+                    y: (h - (lineHeight * 2)) / 2 + lineHeight,
+                    x: (w - (size * text2.length / 2)) / 2
                 });
                 
                 textLines = [textLine1, textLine2];
@@ -435,6 +515,112 @@
                 loop();
             })();
         }
+    </script>
+
+    <script type="module" id="cursor-script">
+        import { animate, createTimeline, createTimer, stagger, utils } from './anime.esm.js';
+
+        const creatureEl = document.querySelector('#creature');
+        const viewport = { w: window.innerWidth * .5, h: window.innerHeight * .5 };
+        const cursor = { x: 0, y: 0 };
+        const rows = 13;
+        const grid = [rows, rows];
+        const from = 'center';
+        const scaleStagger = stagger([2, 5], { ease: 'inQuad', grid, from });
+        const opacityStagger = stagger([1, .1], { grid, from });
+        
+        for (let i = 0; i < (rows * rows); i++) {
+          creatureEl.appendChild(document.createElement('div'));
+        }
+        
+        const particuleEls = creatureEl.querySelectorAll('div');
+        
+        utils.set(creatureEl, {
+          width: rows * 10 + 'em',
+          height: rows * 10 + 'em'
+        });
+        
+        utils.set(particuleEls, {
+          x: 0,
+          y: 0,
+          scale: scaleStagger,
+          opacity: opacityStagger,
+          background: stagger([80, 20], { grid, from,
+            modifier: v => `hsl(4, 70%, ${v}%)`,
+          }),
+          boxShadow: stagger([8, 1], { grid, from,
+            modifier: v => `0px 0px ${utils.round(v, 0)}em 0px var(--red)`,
+          }),
+          zIndex: stagger([rows * rows, 1], { grid, from, modifier: utils.round(0) }),
+        });
+        
+        const pulse = () => {
+          animate(particuleEls, {
+            keyframes: [
+              {
+                scale: 5,
+                opacity: 1,
+                delay: stagger(90, { start: 1650, grid, from }),
+                duration: 150,
+              }, {
+                scale: scaleStagger,
+                opacity: opacityStagger,
+                ease: 'inOutQuad',
+                duration: 600
+              }
+            ],
+          });
+        }
+        
+        const mainLoop = createTimer({
+          frameRate: 15, // Animate to the new cursor position every 250ms
+          onUpdate: () => {
+            animate(particuleEls, {
+              x: cursor.x,
+              y: cursor.y,
+              delay: stagger(40, { grid, from }),
+              duration: stagger(120, { start: 750, ease: 'inQuad', grid, from }),
+              ease: 'inOut',
+              composition: 'blend', // This allows the animations to overlap nicely
+            });
+          }
+        });
+        
+        const autoMove = createTimeline()
+        .add(cursor, {
+          x: [-viewport.w * .45, viewport.w * .45],
+          modifier: x => x + Math.sin(mainLoop.currentTime * .0007) * viewport.w * .5,
+          duration: 3000,
+          ease: 'inOutExpo',
+          alternate: true,
+          loop: true,
+          onBegin: pulse,
+          onLoop: pulse,
+        }, 0)
+        .add(cursor, {
+          y: [-viewport.h * .45, viewport.h * .45],
+          modifier: y => y + Math.cos(mainLoop.currentTime * .00012) * viewport.h * .5,
+          duration: 1000,
+          ease: 'inOutQuad',
+          alternate: true,
+          loop: true,
+        }, 0);
+        
+        const manualMovementTimeout = createTimer({
+          duration: 1500,
+          onComplete: () => autoMove.play(),
+        });
+        
+        const followPointer = e => {
+          const event = e.type === 'touchmove' ? e.touches[0] : e;
+          cursor.x = event.pageX - viewport.w;
+          cursor.y = event.pageY - viewport.h;
+          autoMove.pause();
+          manualMovementTimeout.restart();
+        }
+        
+        document.addEventListener('mousemove', followPointer);
+        document.addEventListener('touchmove', followPointer);
     </script>
 </body>
 </html>
