@@ -34,6 +34,7 @@
     let particles = [];
     let backgroundLines = [];
     let backgroundSquares = [];
+    let currentTextIndex = 0;
 
     // Utility function to create random colors
     function getRandomColor() {
@@ -187,33 +188,39 @@
         this.color = options.color || '#00ffff';
         this.delay = options.delay || 1;
         this.basedelay = this.delay;
+        this.fontFamily = options.fontFamily || 'Courier New';
 
-        buffer.font = `bold ${this.size}px 'Courier New', Courier, monospace`;
+        buffer.font = `bold ${this.size}px '${this.fontFamily}', Courier, monospace`;
         this.bound = buffer.measureText(this.copy);
         this.bound.height = this.size * 1.2;
         this.x = options.x || w * 0.5 - this.bound.width * 0.5;
-        this.y = options.y || h * 0.5 - this.bound.height * 0.5; // Corrected Y position
+        this.y = options.y || h * 0.5 - this.bound.height * 0.5;
         
         buffer.strokeStyle = this.color;
         buffer.lineWidth = 2;
         buffer.strokeText(this.copy, 0, this.bound.height * 0.8);
         this.data = buffer.getImageData(0, 0, this.bound.width, this.bound.height);
         this.index = 0;
-        this.isComplete = false;
+        this.isComplete = options.isComplete || false;
       }
 
       update() {
         if (this.isComplete) {
-            return;
+          return;
         }
-
+        
         if (this.index >= this.bound.width) {
           this.isComplete = true;
-          // एनिमेशन खत्म होने के बाद 5 सेकंड का टाइमर
-          setTimeout(() => {
-            window.location.href = "main.html";
-          }, 5000); // 5000 milliseconds = 5 seconds
-          
+          // Start the next text animation
+          if (currentTextIndex < text.length - 1) {
+            currentTextIndex++;
+            text[currentTextIndex].isComplete = false;
+          } else {
+            // All animations are complete, now redirect
+            setTimeout(() => {
+              window.location.href = "loading.html";
+            }, 5000);
+          }
           return;
         }
 
@@ -224,7 +231,7 @@
             const x = this.x + this.index;
             const y = this.y + i / this.bound.width / 4;
             glitchBlocks.push(new GlitchBlock({ x: x, y: y }));
-            particles.push(new Particle({ x: x, y: y, color: '#00ffff' }));
+            particles.push(new Particle({ x: x, y: y, color: this.color }));
           }
         }
         if (this.delay-- < 0) {
@@ -245,7 +252,11 @@
     }
 
     function update() {
-      text.update();
+      text.forEach(t => {
+        if (!t.isComplete) {
+          t.update();
+        }
+      });
       glitchBlocks.forEach((g, i) => g.update(i, glitchBlocks));
       particles.forEach((p, i) => p.update(i, particles));
       backgroundLines.forEach(l => l.update());
@@ -264,7 +275,7 @@
       backgroundSquares.forEach(s => s.render(ctx));
 
       ctx.globalCompositeOperation = 'lighter';
-      text.render(ctx);
+      text.forEach(t => t.render(ctx));
       glitchBlocks.forEach(g => g.render(ctx));
       particles.forEach(p => p.render(ctx));
     }
@@ -294,10 +305,28 @@
       const baseSize = 120;
       const size = w < 600 ? baseSize * (w / 600) : baseSize;
       
-      text = new Text({
-        copy: 'JP YADAV JI',
-        size: size
-      });
+      text = [
+        new Text({
+          copy: 'Jp',
+          size: size,
+          y: h * 0.5 - (size * 1.2) * 1.5,
+          color: '#00ffff'
+        }),
+        new Text({
+          copy: 'Yadav',
+          size: size,
+          y: h * 0.5 - (size * 1.2) * 0.5,
+          color: '#ff00ff',
+          isComplete: true
+        }),
+        new Text({
+          copy: 'Ji',
+          size: size,
+          y: h * 0.5 + (size * 1.2) * 0.5,
+          color: '#00ff00',
+          isComplete: true
+        })
+      ];
 
       canvas.addEventListener('click', e => {
         const x = e.clientX;
